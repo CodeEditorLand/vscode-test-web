@@ -1,20 +1,36 @@
 {
   "name": "vscode-test-web-fs",
-  "private": "false",
   "displayName": "vscode-test-web file system provider",
-  "description": "Provides a file provider for web tests to access local files and folders.",
-  "publisher": "vscode",
   "version": "0.0.1",
-  "license": "MIT",
-  "engines": {
-    "vscode": "1.72.0"
-  },
+  "private": "false",
+  "description": "Provides a file provider for web tests to access local files and folders.",
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onFileSystem:vscode-test-web"
-  ],
+  "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
+  "bugs": {
+    "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Nikola Hristov",
+    "email": "nikola@nikolahristov.tech",
+    "url": "https://nikolahristov.tech"
+  },
+  "publisher": "playform",
+  "type": "module",
+  "browser": "./dist/fsExtensionMain.js",
+  "scripts": {
+    "compile-web": "webpack",
+    "package-web": "webpack --mode production --devtool hidden-source-map",
+    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts",
+    "vscode:prepublish": "npm run package-web",
+    "watch-web": "webpack --watch"
+  },
   "contributes": {
     "resourceLabelFormatters": [
       {
@@ -27,41 +43,25 @@
       }
     ]
   },
-  "browser": "./dist/fsExtensionMain.js",
-  "scripts": {
-    "vscode:prepublish": "npm run package-web",
-    "compile-web": "webpack",
-    "watch-web": "webpack --watch",
-    "package-web": "webpack --mode production --devtool hidden-source-map",
-    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts"
-  },
+  "activationEvents": [
+    "onFileSystem:vscode-test-web"
+  ],
   "devDependencies": {
     "@types/vscode": "1.83.1",
     "@types/webpack-env": "1.18.3",
-    "ts-loader": "9.5.0",
-    "webpack": "5.89.0",
-    "webpack-cli": "5.1.4",
-    "process": "0.11.10",
     "path-browserify": "1.0.1",
+    "process": "0.11.10",
     "request-light": "0.7.0",
+    "ts-loader": "9.5.0",
+    "typescript-esbuild": "0.3.1",
     "vscode-uri": "3.0.8",
-    "typescript-esbuild": "0.3.1"
+    "webpack": "5.89.0",
+    "webpack-cli": "5.1.4"
   },
-  "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
-  "bugs": {
-    "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
+  "engines": {
+    "vscode": "1.72.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
-  },
-  "type": "module",
   "publishConfig": {
     "access": "public"
-  },
-  "author": {
-    "name": "Nikola Hristov",
-    "email": "nikola@nikolahristov.tech",
-    "url": "https://nikolahristov.tech"
   }
 }
