@@ -1,6 +1,6 @@
 {
   "name": "@vscode/test-web",
-  "version": "0.0.48",
+  "version": "0.0.1",
   "scripts": {
     "install-extensions": "npm i --prefix=fs-provider && npm i --prefix=sample",
     "compile": "tsc -p ./ && npm run compile-fs-provider",
@@ -13,7 +13,8 @@
     "compile-sample": "npm run --prefix=sample compile-web",
     "sample": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample sample/test-workspace",
     "sample-tests": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample --extensionTestsPath=sample/dist/web/test/suite/index.js --headless=true sample/test-workspace",
-    "empty": "npm run compile && node ."
+    "empty": "npm run compile && node .",
+    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts"
   },
   "main": "./out/index.js",
   "bin": {
@@ -52,15 +53,26 @@
     "@typescript-eslint/parser": "6.9.0",
     "eslint": "8.52.0",
     "eslint-plugin-header": "3.1.1",
-    "typescript": "5.2.2"
+    "typescript": "5.2.2",
+    "typescript-esbuild": "0.3.1"
   },
   "license": "MIT",
-  "author": "Visual Studio Code Team",
+  "author": {
+    "name": "Nikola Hristov",
+    "email": "nikola@nikolahristov.tech",
+    "url": "https://nikolahristov.tech"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/microsoft/vscode-test-web.git"
+    "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
   },
   "bugs": {
-    "url": "https://github.com/microsoft/vscode-test-web/issues"
+    "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
+  },
+  "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
+  "type": "module",
+  "private": "false",
+  "publishConfig": {
+    "access": "public"
   }
 }
