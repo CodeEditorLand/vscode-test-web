@@ -1,79 +1,79 @@
 {
-  "name": "@vscode/test-web",
-  "version": "0.0.1",
-  "private": "false",
-  "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
-  "bugs": {
-    "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
-  },
-  "license": "MIT",
-  "author": {
-    "name": "Nikola Hristov",
-    "email": "nikola@nikolahristov.tech",
-    "url": "https://nikolahristov.tech"
-  },
-  "publisher": "playform",
-  "type": "module",
-  "main": "./out/index.js",
-  "bin": {
-    "vscode-test-web": "./out/index.js"
-  },
-  "scripts": {
-    "compile": "tsc -p ./ && npm run compile-fs-provider",
-    "compile-fs-provider": "npm run --prefix=fs-provider compile-web",
-    "compile-sample": "npm run --prefix=sample compile-web",
-    "empty": "npm run compile && node .",
-    "install-extensions": "npm i --prefix=fs-provider && npm i --prefix=sample",
-    "prepack": "npm run compile",
-    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts",
-    "sample": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample sample/test-workspace",
-    "sample-tests": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample --extensionTestsPath=sample/dist/web/test/suite/index.js --headless=true sample/test-workspace",
-    "test": "eslint src --ext ts && tsc --noEmit",
-    "preversion": "npm test",
-    "postversion": "git push && git push --tags",
-    "watch": "tsc -w -p ./"
-  },
-  "dependencies": {
-    "@koa/cors": "4.0.0",
-    "@koa/router": "12.0.1",
-    "@playwright/browser-chromium": "1.39.0",
-    "gunzip-maybe": "1.4.2",
-    "http-proxy-agent": "7.0.0",
-    "https-proxy-agent": "7.0.2",
-    "koa": "2.14.2",
-    "koa-morgan": "1.0.1",
-    "koa-mount": "4.0.0",
-    "koa-static": "5.0.0",
-    "minimist": "1.2.8",
-    "playwright": "1.39.0",
-    "tar-fs": "3.0.4",
-    "vscode-uri": "3.0.8"
-  },
-  "devDependencies": {
-    "@types/gunzip-maybe": "1.4.1",
-    "@types/koa": "2.13.10",
-    "@types/koa-morgan": "1.0.7",
-    "@types/koa-mount": "4.0.4",
-    "@types/koa-static": "4.0.3",
-    "@types/koa__router": "12.0.3",
-    "@types/minimist": "1.2.4",
-    "@types/node": "20.8.9",
-    "@types/tar-fs": "2.0.3",
-    "@typescript-eslint/eslint-plugin": "6.9.0",
-    "@typescript-eslint/parser": "6.9.0",
-    "eslint": "8.52.0",
-    "eslint-plugin-header": "3.1.1",
-    "typescript": "5.2.2",
-    "typescript-esbuild": "0.3.1"
-  },
-  "engines": {
-    "node": ">=16"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+	"name": "@vscode/test-web",
+	"version": "0.0.1",
+	"private": "false",
+	"homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
+	"bugs": {
+		"url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Nikola Hristov",
+		"email": "nikola@nikolahristov.tech",
+		"url": "https://nikolahristov.tech"
+	},
+	"publisher": "playform",
+	"type": "module",
+	"main": "./out/index.js",
+	"bin": {
+		"vscode-test-web": "./out/index.js"
+	},
+	"scripts": {
+		"compile": "tsc -p ./ && npm run compile-fs-provider",
+		"compile-fs-provider": "npm run --prefix=fs-provider compile-web",
+		"compile-sample": "npm run --prefix=sample compile-web",
+		"empty": "npm run compile && node .",
+		"install-extensions": "npm i --prefix=fs-provider && npm i --prefix=sample",
+		"prepack": "npm run compile",
+		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"sample": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample sample/test-workspace",
+		"sample-tests": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample --extensionTestsPath=sample/dist/web/test/suite/index.js --headless=true sample/test-workspace",
+		"test": "eslint src --ext ts && tsc --noEmit",
+		"preversion": "npm test",
+		"postversion": "git push && git push --tags",
+		"watch": "tsc -w -p ./"
+	},
+	"dependencies": {
+		"@koa/cors": "4.0.0",
+		"@koa/router": "12.0.1",
+		"@playwright/browser-chromium": "1.39.0",
+		"gunzip-maybe": "1.4.2",
+		"http-proxy-agent": "7.0.0",
+		"https-proxy-agent": "7.0.2",
+		"koa": "2.14.2",
+		"koa-morgan": "1.0.1",
+		"koa-mount": "4.0.0",
+		"koa-static": "5.0.0",
+		"minimist": "1.2.8",
+		"playwright": "1.39.0",
+		"tar-fs": "3.0.4",
+		"vscode-uri": "3.0.8"
+	},
+	"devDependencies": {
+		"@types/gunzip-maybe": "1.4.1",
+		"@types/koa": "2.13.10",
+		"@types/koa-morgan": "1.0.7",
+		"@types/koa-mount": "4.0.4",
+		"@types/koa-static": "4.0.3",
+		"@types/koa__router": "12.0.3",
+		"@types/minimist": "1.2.4",
+		"@types/node": "20.8.9",
+		"@types/tar-fs": "2.0.3",
+		"@typescript-eslint/eslint-plugin": "6.9.0",
+		"@typescript-eslint/parser": "6.9.0",
+		"eslint": "8.52.0",
+		"eslint-plugin-header": "3.1.1",
+		"typescript": "5.2.2",
+		"typescript-esbuild": "0.3.1"
+	},
+	"engines": {
+		"node": ">=16"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
 }
