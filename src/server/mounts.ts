@@ -3,53 +3,36 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConfig } from "./main";
+import { IConfig } from './main';
 
-import * as Koa from "koa";
-import * as kstatic from "koa-static";
-import * as kmount from "koa-mount";
-import * as Router from "@koa/router";
+import * as Koa from 'koa';
+import * as kstatic from 'koa-static';
+import * as kmount from 'koa-mount';
+import * as Router from '@koa/router';
 
-import { Dirent, promises as fs, Stats } from "fs";
-import * as path from "path";
+import { Dirent, promises as fs, Stats } from 'fs';
+import * as path from 'path';
 
-const mountPrefix = "/static/mount";
-export const fsProviderExtensionPrefix = "/static/extensions/fs";
-export const fsProviderFolderUri = "vscode-test-web://mount/";
+const mountPrefix = '/static/mount';
+export const fsProviderExtensionPrefix = '/static/extensions/fs';
+export const fsProviderFolderUri = 'vscode-test-web://mount/';
 
 export function configureMounts(config: IConfig, app: Koa): void {
 	const folderMountPath = config.folderMountPath;
 	if (folderMountPath) {
-		console.log(
-			`Serving local content ${folderMountPath} at ${mountPrefix}`
-		);
+		console.log(`Serving local content ${folderMountPath} at ${mountPrefix}`);
 		app.use(fileOps(mountPrefix, folderMountPath));
-		app.use(
-			kmount(mountPrefix, kstatic(folderMountPath, { hidden: true }))
-		);
+		app.use(kmount(mountPrefix, kstatic(folderMountPath, { hidden: true })));
 
-		app.use(
-			kmount(
-				fsProviderExtensionPrefix,
-				kstatic(path.join(__dirname, "../../fs-provider"), {
-					hidden: true,
-				})
-			)
-		);
+		app.use(kmount(fsProviderExtensionPrefix, kstatic(path.join(__dirname, '../../fs-provider'), { hidden: true })));
 	}
 }
 
-function fileOps(
-	mountPrefix: string,
-	folderMountPath: string
-): Router.Middleware {
+function fileOps(mountPrefix: string, folderMountPath: string): Router.Middleware {
 	const router = new Router();
 	router.get(`${mountPrefix}(/.*)?`, async (ctx, next) => {
 		if (ctx.query.stat !== undefined) {
-			const p = path.join(
-				folderMountPath,
-				decodeURIComponent(ctx.path.substring(mountPrefix.length))
-			);
+			const p = path.join(folderMountPath, decodeURIComponent(ctx.path.substring(mountPrefix.length)));
 			try {
 				const stats = await fs.stat(p);
 				ctx.body = {
@@ -62,16 +45,10 @@ function fileOps(
 				ctx.body = { error: (e as NodeJS.ErrnoException).code };
 			}
 		} else if (ctx.query.readdir !== undefined) {
-			const p = path.join(
-				folderMountPath,
-				decodeURIComponent(ctx.path.substring(mountPrefix.length))
-			);
+			const p = path.join(folderMountPath, decodeURIComponent(ctx.path.substring(mountPrefix.length)));
 			try {
 				const entries = await fs.readdir(p, { withFileTypes: true });
-				ctx.body = entries.map((d) => ({
-					name: d.name,
-					type: getFileType(d),
-				}));
+				ctx.body = entries.map((d) => ({ name: d.name, type: getFileType(d) }));
 			} catch (e) {
 				ctx.body = { error: (e as NodeJS.ErrnoException).code };
 			}
