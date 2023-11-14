@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import createApp from "./app";
+import createApp from './app';
 
 export interface IConfig {
 	readonly extensionPaths: string[] | undefined;
@@ -24,19 +24,19 @@ export interface GalleryExtensionInfo {
 }
 
 export interface Sources {
-	readonly type: "sources";
+	readonly type: 'sources';
 	readonly location: string;
 }
 
 export interface Static {
-	readonly type: "static";
+	readonly type: 'static';
 	readonly location: string;
-	readonly quality: "stable" | "insider";
+	readonly quality: 'stable' | 'insider';
 	readonly version: string;
 }
 
 export interface CDN {
-	readonly type: "cdn";
+	readonly type: 'cdn';
 	readonly uri: string;
 }
 
@@ -44,11 +44,7 @@ export interface IServer {
 	close(): void;
 }
 
-export async function runServer(
-	host: string,
-	port: number | undefined,
-	config: IConfig
-): Promise<IServer> {
+export async function runServer(host: string, port: number | undefined, config: IConfig): Promise<IServer> {
 	const app = await createApp(config);
 	try {
 		const server = app.listen(port, host);
