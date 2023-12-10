@@ -1,21 +1,20 @@
 {
 	"name": "vscode-test-web-fs",
-	"displayName": "vscode-test-web file system provider",
-	"version": "0.0.1",
 	"private": true,
+	"displayName": "vscode-test-web file system provider",
 	"description": "Provides a file provider for web tests to access local files and folders.",
+	"publisher": "vscode",
+	"version": "0.0.1",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.72.0"
+	},
 	"categories": [
 		"Other"
 	],
-	"license": "MIT",
-	"publisher": "vscode",
-	"browser": "./dist/fsExtensionMain.js",
-	"scripts": {
-		"compile-web": "webpack",
-		"package-web": "webpack --mode production --devtool hidden-source-map",
-		"vscode:prepublish": "npm run package-web",
-		"watch-web": "webpack --watch"
-	},
+	"activationEvents": [
+		"onFileSystem:vscode-test-web"
+	],
 	"contributes": {
 		"resourceLabelFormatters": [
 			{
@@ -28,21 +27,22 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"onFileSystem:vscode-test-web"
-	],
-	"devDependencies": {
-		"@types/vscode": "1.85.0",
-		"@types/webpack-env": "1.18.4",
-		"path-browserify": "1.0.1",
-		"process": "0.11.10",
-		"request-light": "0.7.0",
-		"ts-loader": "9.5.1",
-		"vscode-uri": "3.0.8",
-		"webpack": "5.89.0",
-		"webpack-cli": "5.1.4"
+	"browser": "./dist/fsExtensionMain.js",
+	"scripts": {
+		"vscode:prepublish": "npm run package-web",
+		"compile-web": "webpack",
+		"watch-web": "webpack --watch",
+		"package-web": "webpack --mode production --devtool hidden-source-map"
 	},
-	"engines": {
-		"vscode": "1.72.0"
+	"devDependencies": {
+		"@types/vscode": "^1.81.0",
+		"@types/webpack-env": "^1.18.3",
+		"ts-loader": "^9.5.0",
+		"webpack": "^5.89.0",
+		"webpack-cli": "^5.1.4",
+		"process": "^0.11.10",
+		"path-browserify": "^1.0.1",
+		"request-light": "^0.7.0",
+		"vscode-uri": "^3.0.8"
 	}
 }
