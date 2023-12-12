@@ -6,29 +6,28 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConfig, runServer, Static, Sources } from "./server/main";
-import {
-	downloadAndUnzipVSCode,
-	directoryExists,
-	fileExists,
-} from "./server/download";
+import { IConfig, runServer, Static, Sources } from './server/main';
+import { downloadAndUnzipVSCode, directoryExists, fileExists } from './server/download';
 
-import * as playwright from "playwright";
-import * as minimist from "minimist";
-import * as path from "path";
+import * as playwright from 'playwright';
+import * as minimist from 'minimist';
+import * as path from 'path';
 
-export type BrowserType = "chromium" | "firefox" | "webkit" | "none";
-export type VSCodeQuality = "insiders" | "stable";
+export type BrowserType = 'chromium' | 'firefox' | 'webkit' | 'none';
+export type VSCodeQuality = 'insiders' | 'stable';
 
-export type GalleryExtension = {
-	readonly id: string;
-	readonly preRelease?: boolean;
-};
+export type GalleryExtension = { readonly id: string; readonly preRelease?: boolean };
 export interface Options {
+
 	/**
 	 * Browser to open: 'chromium' | 'firefox' | 'webkit' | 'none'.
 	 */
 	browserType: BrowserType;
+
+	/**
+	 * Browser command line options.
+	 */
+	browserOptions?: string[];
 
 	/**
 	 * Absolute path to folder that contains one or more extensions (in subfolders).
@@ -166,75 +165,59 @@ export interface Disposable {
  *
  * @param options The options defining browser type, extension and test location.
  */
-export async function runTests(
-	options: Options & { extensionTestsPath: string }
-): Promise<void> {
+export async function runTests(options: Options & { extensionTestsPath: string }): Promise<void> {
 	const config: IConfig = {
 		extensionDevelopmentPath: options.extensionDevelopmentPath,
 		extensionTestsPath: options.extensionTestsPath,
 		build: await getBuild(options),
 		folderUri: options.folderUri,
 		folderMountPath: options.folderPath,
-		printServerLog:
-			options.printServerLog ?? options.hideServerLog === false,
+		printServerLog: options.printServerLog ?? options.hideServerLog === false,
 		extensionPaths: options.extensionPaths,
 		extensionIds: options.extensionIds,
 		coi: !!options.coi,
 		esm: !!options.esm,
 	};
 
-	const host = options.host ?? "localhost";
+	const host = options.host ?? 'localhost';
 	const port = options.port ?? 3000;
 	const server = await runServer(host, port, config);
 
 	return new Promise(async (s, e) => {
 		const endpoint = `http://${host}:${port}`;
 
-		const configPage = async (
-			page: playwright.Page,
-			browser: playwright.Browser
-		) => {
-			type Severity = "error" | "warning" | "info";
+		const configPage = async (page: playwright.Page, browser: playwright.Browser) => {
+			type Severity = 'error' | 'warning' | 'info';
 			const unreportedOutput: { type: Severity; args: unknown[] }[] = [];
-			await page.exposeFunction(
-				"codeAutomationLog",
-				(type: Severity, args: unknown[]) => {
-					console[type](...args);
-				}
-			);
+			await page.exposeFunction('codeAutomationLog', (type: Severity, args: unknown[]) => {
+				console[type](...args);
+			});
 
-			await page.exposeFunction(
-				"codeAutomationExit",
-				async (code: number) => {
-					try {
-						await browser.close();
-					} catch (error) {
-						console.error(`Error when closing browser: ${error}`);
-					}
-					if (unreportedOutput.length) {
-						console.error(
-							`There were ${unreportedOutput.length} messages that could not be reported to the console:`
-						);
-						unreportedOutput.forEach(({ type, args }) =>
-							console[type](...args)
-						);
-					}
-					server.close();
-					if (code === 0) {
-						s();
-					} else {
-						e(new Error("Test failed"));
-					}
+			await page.exposeFunction('codeAutomationExit', async (code: number) => {
+				try {
+					await browser.close();
+				} catch (error) {
+					console.error(`Error when closing browser: ${error}`);
 				}
-			);
+				if (unreportedOutput.length) {
+					console.error(`There were ${unreportedOutput.length} messages that could not be reported to the console:`);
+					unreportedOutput.forEach(({ type, args }) => console[type](...args));
+				}
+				server.close();
+				if (code === 0) {
+					s();
+				} else {
+					e(new Error('Test failed'));
+				}
+			});
 		};
 		console.log(`Opening browser on ${endpoint}...`);
 		const context = await openBrowser(endpoint, options, configPage);
 		if (context) {
-			context.once("close", () => server.close());
+			context.once('close', () => server.close());
 		} else {
 			server.close();
-			e(new Error("Can not run test as opening of browser failed."));
+			e(new Error('Can not run test as opening of browser failed.'));
 		}
 	});
 }
@@ -242,18 +225,13 @@ export async function runTests(
 async function getBuild(options: Options): Promise<Static | Sources> {
 	if (options.vsCodeDevPath) {
 		return {
-			type: "sources",
+			type: 'sources',
 			location: options.vsCodeDevPath,
 		};
 	}
 	const quality = options.quality || options.version;
-	const testRunnerDataDir =
-		options.testRunnerDataDir ??
-		path.resolve(process.cwd(), ".vscode-test-web");
-	return await downloadAndUnzipVSCode(
-		quality === "stable" ? "stable" : "insider",
-		testRunnerDataDir
-	);
+	const testRunnerDataDir = options.testRunnerDataDir ?? path.resolve(process.cwd(), '.vscode-test-web');
+	return await downloadAndUnzipVSCode(quality === 'stable' ? 'stable' : 'insider', testRunnerDataDir);
 }
 
 export async function open(options: Options): Promise<Disposable> {
@@ -263,22 +241,21 @@ export async function open(options: Options): Promise<Disposable> {
 		build: await getBuild(options),
 		folderUri: options.folderUri,
 		folderMountPath: options.folderPath,
-		printServerLog:
-			options.printServerLog ?? options.hideServerLog === false,
+		printServerLog: options.printServerLog ?? options.hideServerLog === false,
 		extensionPaths: options.extensionPaths,
 		extensionIds: options.extensionIds,
 		coi: !!options.coi,
 		esm: !!options.esm,
 	};
 
-	const host = options.host ?? "localhost";
+	const host = options.host ?? 'localhost';
 	const port = options.port ?? 3000;
 	const server = await runServer(host, port, config);
 
 	const endpoint = `http://${host}:${port}`;
 
 	const context = await openBrowser(endpoint, options);
-	context?.once("close", () => server.close());
+	context?.once('close', () => server.close());
 	return {
 		dispose: () => {
 			server.close();
@@ -287,15 +264,8 @@ export async function open(options: Options): Promise<Disposable> {
 	};
 }
 
-async function openBrowser(
-	endpoint: string,
-	options: Options,
-	configPage?: (
-		page: playwright.Page,
-		browser: playwright.Browser
-	) => Promise<void>
-): Promise<playwright.BrowserContext | undefined> {
-	if (options.browserType === "none") {
+async function openBrowser(endpoint: string, options: Options, configPage?: (page: playwright.Page, browser: playwright.Browser) => Promise<void>): Promise<playwright.BrowserContext | undefined> {
+	if (options.browserType === 'none') {
 		return undefined;
 	}
 
@@ -306,22 +276,22 @@ async function openBrowser(
 	}
 
 	const args: string[] = [];
-	if (process.platform === "linux" && options.browserType === "chromium") {
-		args.push("--no-sandbox");
+
+	if (options.browserOptions) {
+		args.push(...options.browserOptions);
+	}
+
+	if (process.platform === 'linux' && options.browserType === 'chromium') {
+		args.push('--no-sandbox');
 	}
 
 	if (options.waitForDebugger) {
 		args.push(`--remote-debugging-port=${options.waitForDebugger}`);
 	}
 
-	const headless =
-		options.headless ?? options.extensionTestsPath !== undefined;
+	const headless = options.headless ?? options.extensionTestsPath !== undefined;
 
-	const browser = await browserType.launch({
-		headless,
-		args,
-		devtools: options.devTools,
-	});
+	const browser = await browserType.launch({ headless, args, devtools: options.devTools });
 	const context = await browser.newContext({ viewport: null });
 	if (options.permissions) {
 		context.grantPermissions(options.permissions);
@@ -329,9 +299,9 @@ async function openBrowser(
 
 	// forcefully close browser if last page is closed. workaround for https://github.com/microsoft/playwright/issues/2946
 	let openPages = 0;
-	context.on("page", (page) => {
+	context.on('page', page => {
 		openPages++;
-		page.once("close", () => {
+		page.once('close', () => {
 			openPages--;
 			if (openPages === 0) {
 				browser.close();
@@ -344,10 +314,10 @@ async function openBrowser(
 		await configPage(page, browser);
 	}
 	if (options.waitForDebugger) {
-		await page.waitForFunction(() => "__jsDebugIsReady" in globalThis);
+		await page.waitForFunction(() => '__jsDebugIsReady' in globalThis);
 	}
 	if (options.verbose) {
-		page.on("console", (message) => {
+		page.on('console', (message) => {
 			console.log(message.text());
 		});
 	}
@@ -357,12 +327,9 @@ async function openBrowser(
 	return context;
 }
 
-function validateStringOrUndefined(
-	options: CommandLineOptions,
-	name: keyof CommandLineOptions
-): string | undefined {
+function validateStringOrUndefined(options: CommandLineOptions, name: keyof CommandLineOptions): string | undefined {
 	const value = options[name];
-	if (value === undefined || typeof value === "string") {
+	if (value === undefined || typeof value === 'string') {
 		return value;
 	}
 	console.log(`'${name}' needs to be a string value.`);
@@ -370,21 +337,14 @@ function validateStringOrUndefined(
 	process.exit(-1);
 }
 
-async function validatePathOrUndefined(
-	options: CommandLineOptions,
-	name: keyof CommandLineOptions,
-	isFile?: boolean
-): Promise<string | undefined> {
+async function validatePathOrUndefined(options: CommandLineOptions, name: keyof CommandLineOptions, isFile?: boolean): Promise<string | undefined> {
 	const loc = validateStringOrUndefined(options, name);
 	return loc && validatePath(loc, isFile);
 }
 
-function validateBooleanOrUndefined(
-	options: CommandLineOptions,
-	name: keyof CommandLineOptions
-): boolean | undefined {
+function validateBooleanOrUndefined(options: CommandLineOptions, name: keyof CommandLineOptions): boolean | undefined {
 	const value = options[name];
-	if (value === undefined || typeof value === "boolean") {
+	if (value === undefined || typeof value === 'boolean') {
 		return value;
 	}
 	console.log(`'${name}' needs to be a boolean value.`);
@@ -393,14 +353,11 @@ function validateBooleanOrUndefined(
 }
 
 function validatePrintServerLog(options: CommandLineOptions): boolean {
-	const printServerLog = validateBooleanOrUndefined(
-		options,
-		"printServerLog"
-	);
+	const printServerLog = validateBooleanOrUndefined(options, 'printServerLog');
 	if (printServerLog !== undefined) {
 		return printServerLog;
 	}
-	const hideServerLog = validateBooleanOrUndefined(options, "hideServerLog");
+	const hideServerLog = validateBooleanOrUndefined(options, 'hideServerLog');
 	if (hideServerLog !== undefined) {
 		return !hideServerLog;
 	}
@@ -410,18 +367,13 @@ function validatePrintServerLog(options: CommandLineOptions): boolean {
 function validateBrowserType(options: CommandLineOptions): BrowserType {
 	const browserType = options.browser || options.browserType;
 	if (browserType === undefined) {
-		return "chromium";
+		return 'chromium';
 	}
 	if (options.browserType && options.browser) {
-		console.log(
-			`Ignoring browserType option '${options.browserType}' as browser option '${options.browser}' is set.`
-		);
+		console.log(`Ignoring browserType option '${options.browserType}' as browser option '${options.browser}' is set.`);
 	}
 
-	if (
-		typeof browserType === "string" &&
-		["chromium", "firefox", "webkit", "none"].includes(browserType)
-	) {
+	if (typeof browserType === 'string' && ['chromium', 'firefox', 'webkit', 'none'].includes(browserType)) {
 		return browserType as BrowserType;
 	}
 	console.log(`Invalid browser option ${browserType}.`);
@@ -434,7 +386,7 @@ function validatePermissions(permissions: unknown): string[] | undefined {
 		return undefined;
 	}
 	function isValidPermission(p: unknown): p is string {
-		return typeof p === "string";
+		return typeof p === 'string';
 	}
 	if (isValidPermission(permissions)) {
 		return [permissions];
@@ -443,14 +395,31 @@ function validatePermissions(permissions: unknown): string[] | undefined {
 		return permissions;
 	}
 
-	console.log(`Invalid permission`);
+	console.log(`Invalid permission: ${permissions}`);
 	showHelp();
 	process.exit(-1);
 }
 
-async function validateExtensionPaths(
-	extensionPaths: unknown
-): Promise<string[] | undefined> {
+function validateBrowserOptions(browserOptions: unknown): string[] | undefined {
+	if (browserOptions === undefined) {
+		return undefined;
+	}
+	function isValidOption(p: unknown): p is string {
+		return typeof p === 'string';
+	}
+	if (isValidOption(browserOptions)) {
+		return [browserOptions];
+	}
+	if (Array.isArray(browserOptions) && browserOptions.every(isValidOption)) {
+		return browserOptions;
+	}
+
+	console.log(`Invalid browser option: ${browserOptions}`);
+	showHelp();
+	process.exit(-1);
+}
+
+async function validateExtensionPaths(extensionPaths: unknown): Promise<string[] | undefined> {
 	if (extensionPaths === undefined) {
 		return undefined;
 	}
@@ -460,7 +429,7 @@ async function validateExtensionPaths(
 	if (Array.isArray(extensionPaths)) {
 		const res: string[] = [];
 		for (const extensionPath of extensionPaths) {
-			if (typeof extensionPath === "string") {
+			if (typeof extensionPath === 'string') {
 				res.push(await validatePath(extensionPath));
 			} else {
 				break;
@@ -474,12 +443,9 @@ async function validateExtensionPaths(
 	process.exit(-1);
 }
 
-const EXTENSION_IDENTIFIER_PATTERN =
-	/^([a-z0-9A-Z][a-z0-9-A-Z]*\.[a-z0-9A-Z][a-z0-9-A-Z]*)(@prerelease)?$/;
+const EXTENSION_IDENTIFIER_PATTERN = /^([a-z0-9A-Z][a-z0-9-A-Z]*\.[a-z0-9A-Z][a-z0-9-A-Z]*)(@prerelease)?$/;
 
-async function validateExtensionIds(
-	extensionIds: unknown
-): Promise<GalleryExtension[] | undefined> {
+async function validateExtensionIds(extensionIds: unknown): Promise<GalleryExtension[] | undefined> {
 	if (extensionIds === undefined) {
 		return undefined;
 	}
@@ -489,9 +455,7 @@ async function validateExtensionIds(
 	if (Array.isArray(extensionIds)) {
 		const res: GalleryExtension[] = [];
 		for (const extensionId of extensionIds) {
-			const m =
-				typeof extensionId === "string" &&
-				extensionId.match(EXTENSION_IDENTIFIER_PATTERN);
+			const m = typeof extensionId === 'string' && extensionId.match(EXTENSION_IDENTIFIER_PATTERN);
 			if (m) {
 				if (m[2]) {
 					res.push({ id: m[1], preRelease: true });
@@ -499,9 +463,7 @@ async function validateExtensionIds(
 					res.push({ id: m[1] });
 				}
 			} else {
-				console.log(
-					`Invalid extension id: ${extensionId}. Format is publisher.name[@prerelease].`
-				);
+				console.log(`Invalid extension id: ${extensionId}. Format is publisher.name[@prerelease].`);
 				break;
 			}
 		}
@@ -530,11 +492,7 @@ async function validatePath(loc: string, isFile?: boolean): Promise<string> {
 	return loc;
 }
 
-function validateQuality(
-	quality: unknown,
-	version: unknown,
-	vsCodeDevPath: string | undefined
-): VSCodeQuality | undefined {
+function validateQuality(quality: unknown, version: unknown, vsCodeDevPath: string | undefined): VSCodeQuality | undefined {
 	if (version) {
 		console.log(`--version has been replaced by --quality`);
 		quality = quality || version;
@@ -544,17 +502,11 @@ function validateQuality(
 		console.log(`Sources folder is provided as input, quality is ignored.`);
 		return undefined;
 	}
-	if (
-		quality === undefined ||
-		(typeof quality === "string" &&
-			["insiders", "stable"].includes(quality))
-	) {
+	if (quality === undefined || (typeof quality === 'string' && ['insiders', 'stable'].includes(quality))) {
 		return quality as VSCodeQuality;
 	}
-	if (version === "sources") {
-		console.log(
-			`Instead of version=sources use 'sourcesPath' with the location of the VS Code repository.`
-		);
+	if (version === 'sources') {
+		console.log(`Instead of version=sources use 'sourcesPath' with the location of the VS Code repository.`);
 	} else {
 		console.log(`Invalid quality.`);
 	}
@@ -563,7 +515,7 @@ function validateQuality(
 }
 
 function validatePortNumber(port: unknown): number | undefined {
-	if (typeof port === "string") {
+	if (typeof port === 'string') {
 		const number = Number.parseInt(port);
 		if (!Number.isNaN(number) && number >= 0) {
 			return number;
@@ -574,17 +526,18 @@ function validatePortNumber(port: unknown): number | undefined {
 
 interface CommandLineOptions {
 	browser?: string;
+	browserOptions?: string;
 	browserType?: string;
 	extensionDevelopmentPath?: string;
 	extensionTestsPath?: string;
 	quality?: string;
 	sourcesPath?: string;
-	"open-devtools"?: boolean;
+	'open-devtools'?: boolean;
 	headless?: boolean;
 	hideServerLog?: boolean;
 	printServerLog?: boolean;
 	permission?: string | string[];
-	"folder-uri"?: string;
+	'folder-uri'?: string;
 	extensionPath?: string | string[];
 	extensionId?: string | string[];
 	host?: string;
@@ -597,103 +550,47 @@ interface CommandLineOptions {
 }
 
 function showHelp() {
-	console.log("Usage:");
-	console.log(
-		`  --browser 'chromium' | 'firefox' | 'webkit' | 'none': The browser to launch. [Optional, defaults to 'chromium']`
-	);
-	console.log(
-		`  --extensionDevelopmentPath path: A path pointing to an extension under development to include. [Optional]`
-	);
-	console.log(
-		`  --extensionTestsPath path: A path to a test module to run. [Optional]`
-	);
-	console.log(
-		`  --quality 'insiders' | 'stable' [Optional, default 'insiders', ignored when running from sources]`
-	);
-	console.log(
-		`  --sourcesPath path: If provided, running from VS Code sources at the given location. [Optional]`
-	);
+	console.log('Usage:');
+	console.log(`  --browser 'chromium' | 'firefox' | 'webkit' | 'none': The browser to launch. [Optional, defaults to 'chromium']`);
+	console.log(`  --browserOption option: Command line argument to use when launching the browser instance. [Optional, Multiple]`)
+	console.log(`  --extensionDevelopmentPath path: A path pointing to an extension under development to include. [Optional]`);
+	console.log(`  --extensionTestsPath path: A path to a test module to run. [Optional]`);
+	console.log(`  --quality 'insiders' | 'stable' [Optional, default 'insiders', ignored when running from sources]`);
+	console.log(`  --sourcesPath path: If provided, running from VS Code sources at the given location. [Optional]`);
 	console.log(`  --open-devtools: If set, opens the dev tools. [Optional]`);
-	console.log(
-		`  --headless: Whether to hide the browser. Defaults to true when an extensionTestsPath is provided, otherwise false. [Optional]`
-	);
-	console.log(
-		`  --permission: Permission granted in the opened browser: e.g. 'clipboard-read', 'clipboard-write'. [Optional, Multiple]`
-	);
+	console.log(`  --headless: Whether to hide the browser. Defaults to true when an extensionTestsPath is provided, otherwise false. [Optional]`);
+	console.log(`  --permission: Permission granted in the opened browser: e.g. 'clipboard-read', 'clipboard-write'. [Optional, Multiple]`);
 	console.log(`  --coi: Enables cross origin isolation [Optional]`);
 	console.log(`  --esm: Serve the ESM variant of VS Code [Optional]`);
-	console.log(
-		`  --folder-uri: workspace to open VS Code on. Ignored when folderPath is provided. [Optional]`
-	);
-	console.log(
-		`  --extensionPath: A path pointing to a folder containing additional extensions to include [Optional, Multiple]`
-	);
-	console.log(
-		`  --extensionId: The id of an extension include. The format is '\${publisher}.\${name}'. Append '@prerelease' to use a prerelease version [Optional, Multiple]`
-	);
-	console.log(
-		`  --host: The host name the server is opened on. [Optional, defaults to localhost]`
-	);
-	console.log(
-		`  --port: The port the server is opened on. [Optional, defaults to 3000]`
-	);
+	console.log(`  --folder-uri: workspace to open VS Code on. Ignored when folderPath is provided. [Optional]`);
+	console.log(`  --extensionPath: A path pointing to a folder containing additional extensions to include [Optional, Multiple]`);
+	console.log(`  --extensionId: The id of an extension include. The format is '\${publisher}.\${name}'. Append '@prerelease' to use a prerelease version [Optional, Multiple]`);
+	console.log(`  --host: The host name the server is opened on. [Optional, defaults to localhost]`);
+	console.log(`  --port: The port the server is opened on. [Optional, defaults to 3000]`);
 	console.log(`  --open-devtools: If set, opens the dev tools. [Optional]`);
-	console.log(
-		`  --verbose: If set, prints out more information when running the server. [Optional]`
-	);
-	console.log(
-		`  --printServerLog: If set, prints the server access log. [Optional]`
-	);
-	console.log(
-		`  --testRunnerDataDir: If set, the temporary folder for storing the VS Code builds used for running the tests. [Optional, defaults to '$CURRENT_WORKING_DIR/.vscode-test-web']`
-	);
-	console.log(
-		`  folderPath. A local folder to open VS Code on. The folder content will be available as a virtual file system. [Optional]`
-	);
+	console.log(`  --verbose: If set, prints out more information when running the server. [Optional]`);
+	console.log(`  --printServerLog: If set, prints the server access log. [Optional]`);
+	console.log(`  --testRunnerDataDir: If set, the temporary folder for storing the VS Code builds used for running the tests. [Optional, defaults to '$CURRENT_WORKING_DIR/.vscode-test-web']`);
+	console.log(`  folderPath. A local folder to open VS Code on. The folder content will be available as a virtual file system. [Optional]`);
 }
 
 async function cliMain(): Promise<void> {
-	process.on("unhandledRejection", (e: any) => {
-		console.error("unhandledRejection", e);
+	process.on('unhandledRejection', (e: any) => {
+		console.error('unhandledRejection', e);
 	});
-	process.on("uncaughtException", (e: any) => {
-		console.error("uncaughtException", e);
+	process.on('uncaughtException', (e: any) => {
+		console.error('uncaughtException', e);
 	});
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const manifest = require("../package.json");
+	const manifest = require('../package.json');
 	console.log(`${manifest.name}: ${manifest.version}`);
 
 	const options: minimist.Opts = {
-		string: [
-			"extensionDevelopmentPath",
-			"extensionTestsPath",
-			"browser",
-			"browserType",
-			"quality",
-			"version",
-			"waitForDebugger",
-			"folder-uri",
-			"permission",
-			"extensionPath",
-			"extensionId",
-			"sourcesPath",
-			"host",
-			"port",
-			"testRunnerDataDir",
-		],
-		boolean: [
-			"open-devtools",
-			"headless",
-			"hideServerLog",
-			"printServerLog",
-			"help",
-			"verbose",
-			"coi",
-			"esm",
-		],
-		unknown: (arg) => {
-			if (arg.startsWith("-")) {
+		string: ['extensionDevelopmentPath', 'extensionTestsPath', 'browser', 'browserOption', 'browserType', 'quality', 'version', 'waitForDebugger', 'folder-uri', 'permission', 'extensionPath', 'extensionId', 'sourcesPath', 'host', 'port', 'testRunnerDataDir'],
+		boolean: ['open-devtools', 'headless', 'hideServerLog', 'printServerLog', 'help', 'verbose', 'coi', 'esm'],
+		unknown: arg => {
+			if (arg.startsWith('-')) {
 				console.log(`Unknown argument ${arg}`);
 				showHelp();
 				process.exit();
@@ -707,37 +604,28 @@ async function cliMain(): Promise<void> {
 		process.exit();
 	}
 
+	const browserOptions = validateBrowserOptions(args.browserOption);
 	const browserType = validateBrowserType(args);
-	const extensionTestsPath = await validatePathOrUndefined(
-		args,
-		"extensionTestsPath",
-		true
-	);
-	const extensionDevelopmentPath = await validatePathOrUndefined(
-		args,
-		"extensionDevelopmentPath"
-	);
+	const extensionTestsPath = await validatePathOrUndefined(args, 'extensionTestsPath', true);
+	const extensionDevelopmentPath = await validatePathOrUndefined(args, 'extensionDevelopmentPath');
 	const extensionPaths = await validateExtensionPaths(args.extensionPath);
 	const extensionIds = await validateExtensionIds(args.extensionId);
-	const vsCodeDevPath = await validatePathOrUndefined(args, "sourcesPath");
+	const vsCodeDevPath = await validatePathOrUndefined(args, 'sourcesPath');
 	const quality = validateQuality(args.quality, args.version, vsCodeDevPath);
-	const devTools = validateBooleanOrUndefined(args, "open-devtools");
-	const headless = validateBooleanOrUndefined(args, "headless");
+	const devTools = validateBooleanOrUndefined(args, 'open-devtools');
+	const headless = validateBooleanOrUndefined(args, 'headless');
 	const permissions = validatePermissions(args.permission);
 	const printServerLog = validatePrintServerLog(args);
-	const verbose = validateBooleanOrUndefined(args, "verbose");
+	const verbose = validateBooleanOrUndefined(args, 'verbose');
 	const port = validatePortNumber(args.port);
-	const host = validateStringOrUndefined(args, "host");
-	const coi = validateBooleanOrUndefined(args, "coi");
-	const esm = validateBooleanOrUndefined(args, "esm");
-	const testRunnerDataDir = validateStringOrUndefined(
-		args,
-		"testRunnerDataDir"
-	);
+	const host = validateStringOrUndefined(args, 'host');
+	const coi = validateBooleanOrUndefined(args, 'coi');
+	const esm = validateBooleanOrUndefined(args, 'esm');
+	const testRunnerDataDir = validateStringOrUndefined(args, 'testRunnerDataDir');
 
 	const waitForDebugger = validatePortNumber(args.waitForDebugger);
 
-	let folderUri = validateStringOrUndefined(args, "folder-uri");
+	let folderUri = validateStringOrUndefined(args, 'folder-uri');
 	let folderPath: string | undefined;
 
 	const inputs = args._;
@@ -746,9 +634,7 @@ async function cliMain(): Promise<void> {
 		if (input) {
 			folderPath = input;
 			if (folderUri) {
-				console.log(
-					`Local folder provided as input, ignoring 'folder-uri'`
-				);
+				console.log(`Local folder provided as input, ignoring 'folder-uri'`);
 				folderUri = undefined;
 			}
 		}
@@ -758,6 +644,7 @@ async function cliMain(): Promise<void> {
 		runTests({
 			extensionTestsPath,
 			extensionDevelopmentPath,
+			browserOptions,
 			browserType,
 			quality,
 			devTools,
@@ -776,13 +663,14 @@ async function cliMain(): Promise<void> {
 			host,
 			port,
 			testRunnerDataDir,
-		}).catch((e) => {
-			console.log("Error running tests:", e);
+		}).catch(e => {
+			console.log('Error running tests:', e);
 			process.exit(1);
 		});
 	} else {
 		open({
 			extensionDevelopmentPath,
+			browserOptions,
 			browserType,
 			quality,
 			devTools,
