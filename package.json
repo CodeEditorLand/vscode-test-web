@@ -62,7 +62,7 @@
 		"@types/node": "^20.10.1",
 		"@types/tar-fs": "^2.0.4",
 		"typescript": "^5.3.3",
-		"typescript-esbuild": "latest"
+		"typescript-esbuild": "0.4.5"
 	},
 	"publishConfig": {
 		"access": "public"
