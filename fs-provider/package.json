@@ -1,32 +1,9 @@
 {
-	"name": "vscode-test-web-fs",
-	"displayName": "vscode-test-web file system provider",
-	"version": "0.0.1",
-	"private": false,
-	"description": "Provides a file provider for web tests to access local files and folders.",
-	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
-	"bugs": {
-		"url": "https://github.com/CodeEditorLand/Foundation/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "Playform",
-		"email": "Hello@Playform.Cloud",
-		"url": "https://playform.cloud"
-	},
-	"type": "module",
+	"activationEvents": [
+		"onFileSystem:vscode-test-web",
+		"onSearch:vscode-test-web"
+	],
 	"browser": "./dist/fsExtensionMain.js",
-	"scripts": {
-		"compile-web": "webpack",
-		"package-web": "webpack --mode production --devtool hidden-source-map",
-		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
-		"vscode:prepublish": "npm run package-web",
-		"watch-web": "webpack --watch"
-	},
 	"contributes": {
 		"resourceLabelFormatters": [
 			{
@@ -39,10 +16,7 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"onFileSystem:vscode-test-web",
-		"onSearch:vscode-test-web"
-	],
+	"description": "Provides a file provider for web tests to access local files and folders.",
 	"devDependencies": {
 		"@types/vscode": "^1.81.0",
 		"minimatch": "9.0.3",
@@ -55,10 +29,17 @@
 		"webpack": "^5.90.0",
 		"webpack-cli": "^5.1.4"
 	},
-	"publishConfig": {
-		"access": "public"
-	},
+	"displayName": "vscode-test-web file system provider",
 	"enabledApiProposals": [
 		"fileSearchProvider"
-	]
+	],
+	"name": "vscode-test-web-fs",
+	"scripts": {
+		"compile-web": "webpack",
+		"package-web": "webpack --mode production --devtool hidden-source-map",
+		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"vscode:prepublish": "npm run package-web",
+		"watch-web": "webpack --watch"
+	},
+	"type": "module"
 }
