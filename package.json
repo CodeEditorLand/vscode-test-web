@@ -39,30 +39,30 @@
 		"postversion": "git push && git push --tags"
 	},
 	"dependencies": {
-		"@koa/cors": "^5.0.0",
-		"@koa/router": "^12.0.1",
-		"gunzip-maybe": "^1.4.2",
-		"http-proxy-agent": "^7.0.2",
-		"https-proxy-agent": "^7.0.4",
-		"koa": "^2.15.3",
-		"koa-morgan": "^1.0.1",
-		"koa-mount": "^4.0.0",
-		"koa-static": "^5.0.0",
-		"minimist": "^1.2.8",
-		"tar-fs": "^3.0.5"
+		"@koa/cors": "5.0.0",
+		"@koa/router": "12.0.1",
+		"gunzip-maybe": "1.4.2",
+		"http-proxy-agent": "7.0.2",
+		"https-proxy-agent": "7.0.4",
+		"koa": "2.15.3",
+		"koa-morgan": "1.0.1",
+		"koa-mount": "4.0.0",
+		"koa-static": "5.0.0",
+		"minimist": "1.2.8",
+		"tar-fs": "3.0.6"
 	},
 	"devDependencies": {
 		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
-		"@types/gunzip-maybe": "^1.4.2",
-		"@types/koa": "^2.15.0",
-		"@types/koa-morgan": "^1.0.8",
-		"@types/koa-mount": "^4.0.5",
-		"@types/koa-static": "^4.0.4",
-		"@types/koa__router": "^12.0.4",
-		"@types/minimist": "^1.2.5",
-		"@types/node": "^20.12.7",
-		"@types/tar-fs": "^2.0.4"
+		"@types/gunzip-maybe": "1.4.2",
+		"@types/koa": "2.15.0",
+		"@types/koa-morgan": "1.0.8",
+		"@types/koa-mount": "4.0.5",
+		"@types/koa-static": "4.0.4",
+		"@types/koa__router": "12.0.4",
+		"@types/minimist": "1.2.5",
+		"@types/node": "20.12.7",
+		"@types/tar-fs": "2.0.4"
 	},
 	"publishConfig": {
 		"access": "public"
