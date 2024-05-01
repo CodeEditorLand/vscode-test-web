@@ -1,34 +1,16 @@
 {
-	"name": "vscode-test-web-fs",
-	"displayName": "vscode-test-web file system provider",
-	"version": "0.0.1",
-	"private": false,
-	"description": "Provides a file provider for web tests to access local files and folders.",
-	"keywords": [
-		"land"
+	"activationEvents": [
+		"onFileSystem:vscode-test-web",
+		"onSearch:vscode-test-web"
 	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandTestWeb.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
 	"author": {
-		"name": "🌆 — Land —",
 		"email": "Land@PlayForm.Cloud",
+		"name": "🌆 — Land —",
 		"url": "HTTPS://Land.PlayForm.Cloud"
 	},
-	"type": "module",
 	"browser": "./dist/fsExtensionMain.js",
-	"scripts": {
-		"Document": "Document 'Source/**/*.ts'",
-		"compile-web": "webpack",
-		"package-web": "webpack --mode production --devtool hidden-source-map",
-		"prepublishOnly": "Build 'Source/**/*.ts'",
-		"watch-web": "webpack --watch"
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb/issues"
 	},
 	"contributes": {
 		"resourceLabelFormatters": [
@@ -42,10 +24,7 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"onFileSystem:vscode-test-web",
-		"onSearch:vscode-test-web"
-	],
+	"description": "Provides a file provider for web tests to access local files and folders.",
 	"devDependencies": {
 		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
@@ -55,10 +34,31 @@
 		"request-light": "0.7.0",
 		"ts-loader": "9.5.1"
 	},
+	"displayName": "vscode-test-web file system provider",
+	"enabledApiProposals": [
+		"fileSearchProvider"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb#readme",
+	"keywords": [
+		"land"
+	],
+	"license": "SEE LICENSE IN LICENSE",
+	"name": "vscode-test-web-fs",
+	"private": false,
 	"publishConfig": {
 		"access": "public"
 	},
-	"enabledApiProposals": [
-		"fileSearchProvider"
-	]
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandTestWeb.git"
+	},
+	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
+		"compile-web": "webpack",
+		"package-web": "webpack --mode production --devtool hidden-source-map",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"watch-web": "webpack --watch"
+	},
+	"type": "module",
+	"version": "0.0.1"
 }
