@@ -1,14 +1,42 @@
 {
+	"name": "@vscode/test-web",
+	"version": "0.0.1",
+	"private": false,
+	"keywords": [
+		"land"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandTestWeb.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
 	"author": {
-		"email": "Land@PlayForm.Cloud",
 		"name": "🌆 — Land —",
+		"email": "Land@PlayForm.Cloud",
 		"url": "HTTPS://Land.PlayForm.Cloud"
 	},
+	"type": "module",
+	"main": "./out/index.js",
 	"bin": {
 		"vscode-test-web": "./out/index.js"
 	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb/issues"
+	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
+		"compile": "tsc -p ./ && npm run compile-fs-provider",
+		"compile-fs-provider": "npm run --prefix=fs-provider compile-web",
+		"compile-sample": "npm run --prefix=sample compile-web",
+		"empty": "npm run compile && node .",
+		"install-extensions": "npm i --prefix=fs-provider && npm i --prefix=sample",
+		"prepack": "npm run compile",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"sample": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample sample/test-workspace",
+		"sample-tests": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample --extensionTestsPath=sample/dist/web/test/suite/index.js --headless=true sample/test-workspace",
+		"preversion": "npm test",
+		"postversion": "git push && git push --tags"
 	},
 	"dependencies": {
 		"@koa/cors": "5.0.0",
@@ -36,35 +64,7 @@
 		"@types/node": "20.12.7",
 		"@types/tar-fs": "2.0.4"
 	},
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb#readme",
-	"keywords": [
-		"land"
-	],
-	"license": "SEE LICENSE IN LICENSE",
-	"main": "./out/index.js",
-	"name": "@vscode/test-web",
-	"private": false,
 	"publishConfig": {
 		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandTestWeb.git"
-	},
-	"scripts": {
-		"Document": "Document 'Source/**/*.ts'",
-		"compile": "tsc -p ./ && npm run compile-fs-provider",
-		"compile-fs-provider": "npm run --prefix=fs-provider compile-web",
-		"compile-sample": "npm run --prefix=sample compile-web",
-		"empty": "npm run compile && node .",
-		"install-extensions": "npm i --prefix=fs-provider && npm i --prefix=sample",
-		"postversion": "git push && git push --tags",
-		"prepack": "npm run compile",
-		"prepublishOnly": "Build 'Source/**/*.ts'",
-		"preversion": "npm test",
-		"sample": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample sample/test-workspace",
-		"sample-tests": "npm run compile && npm run compile-sample && node . --extensionDevelopmentPath=sample --extensionTestsPath=sample/dist/web/test/suite/index.js --headless=true sample/test-workspace"
-	},
-	"type": "module",
-	"version": "0.0.1"
+	}
 }
