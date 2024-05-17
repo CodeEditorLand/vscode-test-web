@@ -1,27 +1,7 @@
 {
 	"name": "vscode-test-web-fs",
 	"displayName": "vscode-test-web file system provider",
-	"version": "0.0.1",
-	"private": false,
 	"description": "Provides a file provider for web tests to access local files and folders.",
-	"keywords": [
-		"land"
-	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandTestWeb/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandTestWeb.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "🛬 Land —",
-		"email": "Land@PlayForm.Cloud",
-		"url": "HTTPS://Land.PlayForm.Cloud"
-	},
-	"type": "module",
 	"browser": "./dist/fsExtensionMain.js",
 	"scripts": {
 		"Document": "Document 'Source/**/*.ts'",
@@ -48,15 +28,11 @@
 	],
 	"devDependencies": {
 		"@playform/build": "0.0.7",
-		"@playform/document": "0.0.6",
 		"minimatch": "9.0.4",
 		"path-browserify": "1.0.1",
 		"process": "0.11.10",
 		"request-light": "0.7.0",
 		"ts-loader": "9.5.1"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"enabledApiProposals": [
 		"fileSearchProvider"
