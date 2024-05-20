@@ -81,7 +81,6 @@ export class MemFileSystemProvider implements FileSystemProvider, FileSearchProv
 			entry.stats = stats;
 			entry.content = Promise.resolve(content);
 		}
-
 		this._fireSoon({ type: FileChangeType.Changed, uri });
 	}
 
