@@ -1,13 +1,8 @@
 {
-	"name": "vscode-test-web-sample",
-	"displayName": "vscode-test-web-sample",
-	"description": "",
+	"activationEvents": [
+		"*"
+	],
 	"browser": "./dist/web/extension.js",
-	"scripts": {
-		"compile-web": "webpack",
-		"package-web": "webpack --mode production --devtool hidden-source-map",
-		"watch-web": "webpack --watch"
-	},
 	"contributes": {
 		"commands": [
 			{
@@ -20,12 +15,17 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"*"
-	],
+	"description": "",
 	"devDependencies": {
 		"assert": "^2.1.0",
 		"process": "^0.11.10",
 		"ts-loader": "^9.5.1"
+	},
+	"displayName": "vscode-test-web-sample",
+	"name": "vscode-test-web-sample",
+	"scripts": {
+		"compile-web": "webpack",
+		"package-web": "webpack --mode production --devtool hidden-source-map",
+		"watch-web": "webpack --watch"
 	}
 }
