@@ -3,13 +3,9 @@
 		"module": "commonjs",
 		"target": "ES2019",
 		"outDir": "dist",
-		"lib": [
-			"ES2019"
-		],
+		"lib": ["ES2019"],
 		"rootDir": "src",
 		"strict": true
 	},
-	"include": [
-		"./src/web/test/runTest.ts"
-	]
+	"include": ["./src/web/test/runTest.ts"]
 }
