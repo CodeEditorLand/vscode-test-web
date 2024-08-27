@@ -16,7 +16,7 @@ automatically run.
 
 The node module provides a command line as well as an API.
 
-## Usage
+## 🛠️ Usage
 
 Via command line:
 
