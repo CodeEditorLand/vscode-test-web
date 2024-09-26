@@ -1,13 +1,9 @@
 {
-	"name": "vscode-test-web-fs",
-	"displayName": "vscode-test-web file system provider",
-	"description": "Provides a file provider for web tests to access local files and folders.",
+	"activationEvents": [
+		"onFileSystem:vscode-test-web",
+		"onSearch:vscode-test-web"
+	],
 	"browser": "./dist/fsExtensionMain.js",
-	"scripts": {
-		"compile-web": "webpack",
-		"package-web": "webpack --mode production --devtool hidden-source-map",
-		"watch-web": "webpack --watch"
-	},
 	"contributes": {
 		"resourceLabelFormatters": [
 			{
@@ -20,10 +16,7 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"onFileSystem:vscode-test-web",
-		"onSearch:vscode-test-web"
-	],
+	"description": "Provides a file provider for web tests to access local files and folders.",
 	"devDependencies": {
 		"minimatch": "10.0.1",
 		"path-browserify": "1.0.1",
@@ -31,8 +24,15 @@
 		"request-light": "0.8.0",
 		"ts-loader": "9.5.1"
 	},
+	"displayName": "vscode-test-web file system provider",
 	"enabledApiProposals": [
 		"fileSearchProvider",
 		"textSearchProvider"
-	]
+	],
+	"name": "vscode-test-web-fs",
+	"scripts": {
+		"compile-web": "webpack",
+		"package-web": "webpack --mode production --devtool hidden-source-map",
+		"watch-web": "webpack --watch"
+	}
 }
