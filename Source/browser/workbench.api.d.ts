@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the MIT License. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 interface UriComponents {
 	scheme?: string;
 	authority?: string;
@@ -91,7 +91,13 @@ declare class URI implements UriComponents {
 	/**
 	 * Use the `file` and `parse` factory functions to create new `Uri` objects.
 	 */
-	private constructor(scheme: string, authority: string, path: string, query: string, fragment: string);
+	private constructor(
+		scheme: string,
+		authority: string,
+		path: string,
+		query: string,
+		fragment: string,
+	);
 
 	/**
 	 * Scheme is the `http` part of `http://www.example.com/some/path?query#fragment`.
@@ -156,7 +162,13 @@ declare class URI implements UriComponents {
 	 * @return A new Uri that reflects the given change. Will return `this` Uri if the change
 	 *  is not changing anything.
 	 */
-	with(change: { scheme?: string; authority?: string; path?: string; query?: string; fragment?: string }): URI;
+	with(change: {
+		scheme?: string;
+		authority?: string;
+		path?: string;
+		query?: string;
+		fragment?: string;
+	}): URI;
 
 	/**
 	 * Returns a string representation of this Uri. The representation and normalization
@@ -173,8 +185,8 @@ declare class URI implements UriComponents {
 	 *
 	 * @param skipEncoding Do not percentage-encode the result, defaults to `false`. Note that
 	 *	the `#` and `?` characters occurring in the path will always be encoded.
-		* @returns A string representation of this Uri.
-		*/
+	 * @returns A string representation of this Uri.
+	 */
 	toString(skipEncoding?: boolean): string;
 
 	/**
@@ -187,8 +199,12 @@ declare class URI implements UriComponents {
 	static revive(data: UriComponents | URI): URI;
 	static revive(data: UriComponents | URI | undefined): URI | undefined;
 	static revive(data: UriComponents | URI | null): URI | null;
-	static revive(data: UriComponents | URI | undefined | null): URI | undefined | null;
-	static revive(data: UriComponents | URI | undefined | null): URI | undefined | null;
+	static revive(
+		data: UriComponents | URI | undefined | null,
+	): URI | undefined | null;
+	static revive(
+		data: UriComponents | URI | undefined | null,
+	): URI | undefined | null;
 }
 
 interface IAction extends IDisposable {
@@ -231,7 +247,11 @@ declare abstract class Disposable implements IDisposable {
  * can be subscribed. The event is the subscriber function itself.
  */
 interface Event<T> {
-	(listener: (e: T) => any, thisArgs?: any, disposables?: IDisposable[]): IDisposable;
+	(
+		listener: (e: T) => any,
+		thisArgs?: any,
+		disposables?: IDisposable[],
+	): IDisposable;
 }
 
 interface EmitterOptions {
@@ -296,11 +316,14 @@ interface IWorkspaceProvider {
 	 * to the opening window via the `IWorkspaceProvider.payload` property.
 	 * @param payload optional payload to send to the workspace to open.
 	 */
-	open(workspace: IWorkspace, options?: { reuse?: boolean; payload?: object }): Promise<boolean>;
+	open(
+		workspace: IWorkspace,
+		options?: { reuse?: boolean; payload?: object },
+	): Promise<boolean>;
 }
 
 interface ISecretStorageProvider {
-	type: 'in-memory' | 'persisted' | 'unknown';
+	type: "in-memory" | "persisted" | "unknown";
 	get(key: string): Promise<string | undefined>;
 	set(key: string, value: string): Promise<void>;
 	delete(key: string): Promise<void>;
@@ -364,7 +387,9 @@ interface IResourceUriProvider {
  */
 type ExtensionId = string;
 
-export type MarketplaceExtension = ExtensionId | { readonly id: ExtensionId; preRelease?: boolean };
+export type MarketplaceExtension =
+	| ExtensionId
+	| { readonly id: ExtensionId; preRelease?: boolean };
 
 interface ICommonTelemetryPropertiesResolver {
 	(): { [key: string]: any };
@@ -405,7 +430,10 @@ interface ITunnelProvider {
 }
 
 interface ITunnelFactory {
-	(tunnelOptions: ITunnelOptions, tunnelCreationOptions: TunnelCreationOptions): Promise<ITunnel> | undefined;
+	(
+		tunnelOptions: ITunnelOptions,
+		tunnelCreationOptions: TunnelCreationOptions,
+	): Promise<ITunnel> | undefined;
 }
 
 interface ITunnelOptions {
@@ -583,10 +611,10 @@ interface IWindowIndicator {
 }
 
 declare enum ColorScheme {
-	DARK = 'dark',
-	LIGHT = 'light',
-	HIGH_CONTRAST_LIGHT = 'hcLight',
-	HIGH_CONTRAST_DARK = 'hcDark',
+	DARK = "dark",
+	LIGHT = "light",
+	HIGH_CONTRAST_LIGHT = "hcLight",
+	HIGH_CONTRAST_DARK = "hcDark",
 }
 
 interface IInitialColorTheme {
@@ -602,7 +630,6 @@ interface IInitialColorTheme {
 }
 
 interface IWelcomeDialog {
-
 	/**
 	 * Unique identifier of the welcome dialog. The identifier will be used to determine
 	 * if the dialog has been previously displayed.
@@ -867,14 +894,14 @@ declare const enum TextEditorSelectionSource {
 	 * was not triggered by the user via keyboard or mouse
 	 * but through text editor APIs.
 	 */
-	PROGRAMMATIC = 'api',
+	PROGRAMMATIC = "api",
 
 	/**
 	 * Navigation source indicates a selection change that
 	 * was caused via some command or UI component such as
 	 * an outline tree.
 	 */
-	NAVIGATION = 'code.navigation',
+	NAVIGATION = "code.navigation",
 
 	/**
 	 * Jump source indicates a selection change that
@@ -882,7 +909,7 @@ declare const enum TextEditorSelectionSource {
 	 * location in the same or different text editor such
 	 * as "Go to definition".
 	 */
-	JUMP = 'code.jump',
+	JUMP = "code.jump",
 }
 
 interface ITextEditorOptions extends IEditorOptions {
@@ -999,7 +1026,7 @@ interface IProductQualityChangeHandler {
 	 * Handler is being called when the user wants to switch between
 	 * `insider` or `stable` product qualities.
 	 */
-	(newQuality: 'insider' | 'stable'): void;
+	(newQuality: "insider" | "stable"): void;
 }
 
 /**
@@ -1114,7 +1141,10 @@ interface IWorkbenchConstructionOptions {
 	 * 	- an extension in the Marketplace
 	 * 	- location of the extension where it is hosted.
 	 */
-	readonly additionalBuiltinExtensions?: readonly (MarketplaceExtension | UriComponents)[];
+	readonly additionalBuiltinExtensions?: readonly (
+		| MarketplaceExtension
+		| UriComponents
+	)[];
 
 	/**
 	 * List of extensions to be enabled if they are installed.
@@ -1175,7 +1205,10 @@ interface IWorkbenchConstructionOptions {
 	/**
 	 * Profile to use for the workbench.
 	 */
-	readonly profile?: { readonly name: string; readonly contents?: string | UriComponents };
+	readonly profile?: {
+		readonly name: string;
+		readonly contents?: string | UriComponents;
+	};
 
 	/**
 	 * URI of the profile to preview.
@@ -1232,7 +1265,7 @@ interface IWorkbenchConstructionOptions {
 
 	/**
 	 *  Welcome view dialog on first launch. Can be dismissed by the user.
-	*/
+	 */
 	readonly welcomeDialog?: IWelcomeDialog;
 
 	//#endregion
@@ -1325,7 +1358,10 @@ export interface IAuthenticationProvider {
 	 * @param scopes - An optional list of scopes. If provided, the sessions returned should match these permissions, otherwise all sessions should be returned.
 	 * @returns A promise that resolves to an array of authentication sessions.
 	 */
-	getSessions(scopes: string[] | undefined, options: IAuthenticationProviderSessionOptions): Promise<readonly IAuthenticationSession[]>;
+	getSessions(
+		scopes: string[] | undefined,
+		options: IAuthenticationProviderSessionOptions,
+	): Promise<readonly IAuthenticationSession[]>;
 
 	/**
 	 * Prompts the user to log in.
@@ -1336,7 +1372,10 @@ export interface IAuthenticationProvider {
 	 * @param options - Additional options for creating the session.
 	 * @returns A promise that resolves to an authentication session.
 	 */
-	createSession(scopes: string[], options: IAuthenticationProviderSessionOptions): Promise<IAuthenticationSession>;
+	createSession(
+		scopes: string[],
+		options: IAuthenticationProviderSessionOptions,
+	): Promise<IAuthenticationSession>;
 
 	/**
 	 * Removes the session corresponding to the specified session ID.
@@ -1381,7 +1420,11 @@ export interface IRemoteResourceRequest {
 	/**
 	 * A method called by the editor to issue a response to the request.
 	 */
-	respondWith(statusCode: number, body: Uint8Array, headers: Record<string, string>): void;
+	respondWith(
+		statusCode: number,
+		body: Uint8Array,
+		headers: Record<string, string>,
+	): void;
 }
 
 interface IPerformanceMark {
@@ -1432,7 +1475,7 @@ interface IProgressNotificationOptions extends IProgressOptions {
 	readonly secondaryActions?: readonly IAction[];
 	readonly delay?: number;
 	readonly silent?: boolean;
-	readonly type?: 'syncing' | 'loading';
+	readonly type?: "syncing" | "loading";
 }
 
 interface IProgressDialogOptions extends IProgressOptions {
@@ -1444,11 +1487,15 @@ interface IProgressDialogOptions extends IProgressOptions {
 interface IProgressWindowOptions extends IProgressOptions {
 	readonly location: ProgressLocation.Window;
 	readonly command?: string;
-	readonly type?: 'syncing' | 'loading';
+	readonly type?: "syncing" | "loading";
 }
 
 interface IProgressCompositeOptions extends IProgressOptions {
-	readonly location: ProgressLocation.Explorer | ProgressLocation.Extensions | ProgressLocation.Scm | string;
+	readonly location:
+		| ProgressLocation.Explorer
+		| ProgressLocation.Extensions
+		| ProgressLocation.Scm
+		| string;
 	readonly delay?: number;
 }
 
@@ -1502,7 +1549,9 @@ interface IWorkbench {
 		 *
 		 * @returns A promise that resolves to tuples of source and marks.
 		 */
-		retrievePerformanceMarks(): Promise<[string, readonly PerformanceMark[]][]>;
+		retrievePerformanceMarks(): Promise<
+			[string, readonly PerformanceMark[]][]
+		>;
 
 		/**
 		 * Allows to open a `URI` with the standard opener service of the
@@ -1531,7 +1580,7 @@ interface IWorkbench {
 				| IProgressNotificationOptions
 				| IProgressWindowOptions
 				| IProgressCompositeOptions,
-			task: (progress: IProgress<IProgressStep>) => Promise<R>
+			task: (progress: IProgress<IProgressStep>) => Promise<R>,
 		): Promise<R>;
 
 		/**
@@ -1542,7 +1591,10 @@ interface IWorkbench {
 		 * @param items A set of items that will be rendered as actions in the message.
 		 * @returns A thenable that resolves to the selected item or `undefined` when being dismissed.
 		 */
-		showInformationMessage<T extends string>(message: string, ...items: T[]): Promise<T | undefined>;
+		showInformationMessage<T extends string>(
+			message: string,
+			...items: T[]
+		): Promise<T | undefined>;
 	};
 
 	workspace: {
@@ -1582,7 +1634,10 @@ interface IWorkbench {
  * @param domElement the container to create the workbench in
  * @param options for setting up the workbench
  */
-declare function create(domElement: HTMLElement, options: IWorkbenchConstructionOptions): IDisposable;
+declare function create(
+	domElement: HTMLElement,
+	options: IWorkbenchConstructionOptions,
+): IDisposable;
 
 //#region API Facade
 
@@ -1625,7 +1680,9 @@ declare namespace env {
 	 *
 	 * @returns A promise that resolves to tuples of source and marks.
 	 */
-	function retrievePerformanceMarks(): Promise<[string, readonly IPerformanceMark[]][]>;
+	function retrievePerformanceMarks(): Promise<
+		[string, readonly IPerformanceMark[]][]
+	>;
 
 	/**
 	 * Allows to open a `URI` with the standard opener service of the
@@ -1654,18 +1711,21 @@ declare namespace window {
 			| IProgressNotificationOptions
 			| IProgressWindowOptions
 			| IProgressCompositeOptions,
-		task: (progress: IProgress<IProgressStep>) => Promise<R>
+		task: (progress: IProgress<IProgressStep>) => Promise<R>,
 	): Promise<R>;
 
 	/**
-		 * Show an information message to users. Optionally provide an array of items which will be presented as
-		 * clickable buttons.
-		 *
-		 * @param message The message to show.
-		 * @param items A set of items that will be rendered as actions in the message.
-		 * @returns A thenable that resolves to the selected item or `undefined` when being dismissed.
-		 */
-	function showInformationMessage<T extends string>(message: string, ...items: T[]): Promise<T | undefined>;
+	 * Show an information message to users. Optionally provide an array of items which will be presented as
+	 * clickable buttons.
+	 *
+	 * @param message The message to show.
+	 * @param items A set of items that will be rendered as actions in the message.
+	 * @returns A thenable that resolves to the selected item or `undefined` when being dismissed.
+	 */
+	function showInformationMessage<T extends string>(
+		message: string,
+		...items: T[]
+	): Promise<T | undefined>;
 }
 
 declare namespace workspace {
@@ -1686,10 +1746,10 @@ declare namespace workspace {
 }
 
 declare const enum RemoteAuthorityResolverErrorCode {
-	Unknown = 'Unknown',
-	NotAvailable = 'NotAvailable',
-	TemporarilyNotAvailable = 'TemporarilyNotAvailable',
-	NoResolverFound = 'NoResolverFound',
+	Unknown = "Unknown",
+	NotAvailable = "NotAvailable",
+	TemporarilyNotAvailable = "TemporarilyNotAvailable",
+	NoResolverFound = "NoResolverFound",
 }
 
 declare class RemoteAuthorityResolverError extends Error {
@@ -1697,7 +1757,11 @@ declare class RemoteAuthorityResolverError extends Error {
 	static isTemporarilyNotAvailable(err: any): boolean;
 	static isNoResolverFound(err: any): err is RemoteAuthorityResolverError;
 	static isHandled(err: any): boolean;
-	constructor(message?: string, code?: RemoteAuthorityResolverErrorCode, detail?: any);
+	constructor(
+		message?: string,
+		code?: RemoteAuthorityResolverErrorCode,
+		detail?: any,
+	);
 }
 
 export {
@@ -1791,5 +1855,5 @@ export {
 	RemoteAuthorityResolverError,
 	RemoteAuthorityResolverErrorCode,
 	// Welcome dialog
-	IWelcomeDialog
+	IWelcomeDialog,
 };

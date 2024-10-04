@@ -4,17 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 ///<amd-module name='vscode-web-browser-main'/>
 
-import { create, IWorkspaceProvider, IWorkbenchConstructionOptions, UriComponents, IWorkspace, URI, IURLCallbackProvider, Emitter, IDisposable} from './workbench.api';
+import {
+	create,
+	Emitter,
+	IDisposable,
+	IURLCallbackProvider,
+	IWorkbenchConstructionOptions,
+	IWorkspace,
+	IWorkspaceProvider,
+	URI,
+	UriComponents,
+} from "./workbench.api";
 
 class WorkspaceProvider implements IWorkspaceProvider {
+	private static QUERY_PARAM_EMPTY_WINDOW = "ew";
+	private static QUERY_PARAM_FOLDER = "folder";
+	private static QUERY_PARAM_WORKSPACE = "workspace";
 
-	private static QUERY_PARAM_EMPTY_WINDOW = 'ew';
-	private static QUERY_PARAM_FOLDER = 'folder';
-	private static QUERY_PARAM_WORKSPACE = 'workspace';
+	private static QUERY_PARAM_PAYLOAD = "payload";
 
-	private static QUERY_PARAM_PAYLOAD = 'payload';
-
-	static create(config: IWorkbenchConstructionOptions & { folderUri?: UriComponents; workspaceUri?: UriComponents }) {
+	static create(
+		config: IWorkbenchConstructionOptions & {
+			folderUri?: UriComponents;
+			workspaceUri?: UriComponents;
+		},
+	) {
 		let foundWorkspace = false;
 		let workspace: IWorkspace;
 		let payload = Object.create(null);
@@ -22,7 +36,6 @@ class WorkspaceProvider implements IWorkspaceProvider {
 		const query = new URL(document.location.href).searchParams;
 		query.forEach((value, key) => {
 			switch (key) {
-
 				// Folder
 				case WorkspaceProvider.QUERY_PARAM_FOLDER:
 					workspace = { folderUri: URI.parse(value) };
@@ -70,11 +83,17 @@ class WorkspaceProvider implements IWorkspaceProvider {
 	private constructor(
 		readonly workspace: IWorkspace,
 		readonly payload: object,
-	) {
-	}
+	) {}
 
-	async open(workspace: IWorkspace, options?: { reuse?: boolean; payload?: object }): Promise<boolean> {
-		if (options?.reuse && !options.payload && this.isSame(this.workspace, workspace)) {
+	async open(
+		workspace: IWorkspace,
+		options?: { reuse?: boolean; payload?: object },
+	): Promise<boolean> {
+		if (
+			options?.reuse &&
+			!options.payload &&
+			this.isSame(this.workspace, workspace)
+		) {
 			return true; // return early if workspace and environment is not changing and we are reusing window
 		}
 
@@ -90,8 +109,10 @@ class WorkspaceProvider implements IWorkspaceProvider {
 		return false;
 	}
 
-	private createTargetUrl(workspace: IWorkspace, options?: { reuse?: boolean; payload?: object }): string | undefined {
-
+	private createTargetUrl(
+		workspace: IWorkspace,
+		options?: { reuse?: boolean; payload?: object },
+	): string | undefined {
 		// Empty
 		let targetHref: string | undefined = undefined;
 		if (!workspace) {
@@ -99,14 +120,18 @@ class WorkspaceProvider implements IWorkspaceProvider {
 		}
 
 		// Folder
-		else if ('folderUri' in workspace) {
-			const queryParamFolder = encodeURIComponent(workspace.folderUri.toString(true));
+		else if ("folderUri" in workspace) {
+			const queryParamFolder = encodeURIComponent(
+				workspace.folderUri.toString(true),
+			);
 			targetHref = `${document.location.origin}${document.location.pathname}?${WorkspaceProvider.QUERY_PARAM_FOLDER}=${queryParamFolder}`;
 		}
 
 		// Workspace
-		else if ('workspaceUri' in workspace) {
-			const queryParamWorkspace = encodeURIComponent(workspace.workspaceUri.toString(true));
+		else if ("workspaceUri" in workspace) {
+			const queryParamWorkspace = encodeURIComponent(
+				workspace.workspaceUri.toString(true),
+			);
 			targetHref = `${document.location.origin}${document.location.pathname}?${WorkspaceProvider.QUERY_PARAM_WORKSPACE}=${queryParamWorkspace}`;
 		}
 
@@ -123,34 +148,41 @@ class WorkspaceProvider implements IWorkspaceProvider {
 			return workspaceA === workspaceB; // both empty
 		}
 
-		if ('folderUri' in workspaceA && 'folderUri' in workspaceB) {
+		if ("folderUri" in workspaceA && "folderUri" in workspaceB) {
 			return this.isEqualURI(workspaceA.folderUri, workspaceB.folderUri); // same workspace
 		}
 
-		if ('workspaceUri' in workspaceA && 'workspaceUri' in workspaceB) {
-			return this.isEqualURI(workspaceA.workspaceUri, workspaceB.workspaceUri); // same workspace
+		if ("workspaceUri" in workspaceA && "workspaceUri" in workspaceB) {
+			return this.isEqualURI(
+				workspaceA.workspaceUri,
+				workspaceB.workspaceUri,
+			); // same workspace
 		}
 
 		return false;
 	}
 
 	private isEqualURI(a: UriComponents, b: UriComponents): boolean {
-		return a.scheme === b.scheme && a.authority === b.authority && a.path === b.path;
+		return (
+			a.scheme === b.scheme &&
+			a.authority === b.authority &&
+			a.path === b.path
+		);
 	}
-
 }
 
-class LocalStorageURLCallbackProvider implements IURLCallbackProvider, IDisposable {
-
+class LocalStorageURLCallbackProvider
+	implements IURLCallbackProvider, IDisposable
+{
 	private static REQUEST_ID = 0;
 
-	private static QUERY_KEYS: ('scheme' | 'authority' | 'path' | 'query' | 'fragment')[] = [
-		'scheme',
-		'authority',
-		'path',
-		'query',
-		'fragment'
-	];
+	private static QUERY_KEYS: (
+		| "scheme"
+		| "authority"
+		| "path"
+		| "query"
+		| "fragment"
+	)[] = ["scheme", "authority", "path", "query", "fragment"];
 
 	private readonly _onCallback = new Emitter<URI>();
 	readonly onCallback = this._onCallback.event;
@@ -160,8 +192,7 @@ class LocalStorageURLCallbackProvider implements IURLCallbackProvider, IDisposab
 	private checkCallbacksTimeout: unknown | undefined = undefined;
 	private onDidChangeLocalStorageDisposable: IDisposable | undefined;
 
-	constructor(private readonly _callbackRoute: string) {
-	}
+	constructor(private readonly _callbackRoute: string) {}
 
 	create(options: Partial<UriComponents> = {}): URI {
 		const id = ++LocalStorageURLCallbackProvider.REQUEST_ID;
@@ -178,7 +209,12 @@ class LocalStorageURLCallbackProvider implements IURLCallbackProvider, IDisposab
 		// TODO@joao remove eventually
 		// https://github.com/microsoft/vscode-dev/issues/62
 		// https://github.com/microsoft/vscode/blob/159479eb5ae451a66b5dac3c12d564f32f454796/extensions/github-authentication/src/githubServer.ts#L50-L50
-		if (!(options.authority === 'vscode.github-authentication' && options.path === '/dummy')) {
+		if (
+			!(
+				options.authority === "vscode.github-authentication" &&
+				options.path === "/dummy"
+			)
+		) {
 			const key = `vscode-web.url-callbacks[${id}]`;
 			localStorage.removeItem(key);
 
@@ -186,7 +222,10 @@ class LocalStorageURLCallbackProvider implements IURLCallbackProvider, IDisposab
 			this.startListening();
 		}
 
-		return URI.parse(window.location.href).with({ path: this._callbackRoute, query: queryParams.join('&') });
+		return URI.parse(window.location.href).with({
+			path: this._callbackRoute,
+			query: queryParams.join("&"),
+		});
 	}
 
 	private startListening(): void {
@@ -195,8 +234,10 @@ class LocalStorageURLCallbackProvider implements IURLCallbackProvider, IDisposab
 		}
 
 		const fn = () => this.onDidChangeLocalStorage();
-		window.addEventListener('storage', fn);
-		this.onDidChangeLocalStorageDisposable = { dispose: () => window.removeEventListener('storage', fn) };
+		window.addEventListener("storage", fn);
+		this.onDidChangeLocalStorageDisposable = {
+			dispose: () => window.removeEventListener("storage", fn),
+		};
 	}
 
 	private stopListening(): void {
@@ -233,7 +274,8 @@ class LocalStorageURLCallbackProvider implements IURLCallbackProvider, IDisposab
 					console.error(error);
 				}
 
-				pendingCallbacks = pendingCallbacks ?? new Set(this.pendingCallbacks);
+				pendingCallbacks =
+					pendingCallbacks ?? new Set(this.pendingCallbacks);
 				pendingCallbacks.delete(id);
 				localStorage.removeItem(key);
 			}
@@ -250,23 +292,32 @@ class LocalStorageURLCallbackProvider implements IURLCallbackProvider, IDisposab
 		this.lastTimeChecked = Date.now();
 	}
 
-    dispose(): void {
-        this._onCallback.dispose();
-    }
+	dispose(): void {
+		this._onCallback.dispose();
+	}
 }
 
 (function () {
-    const configElement = window.document.getElementById('vscode-workbench-web-configuration');
-    const configElementAttribute = configElement ? configElement.getAttribute('data-settings') : undefined;
-    if (!configElement || !configElementAttribute) {
-        throw new Error('Missing web configuration element');
-    }
-    const config: IWorkbenchConstructionOptions & { folderUri?: UriComponents; workspaceUri?: UriComponents; callbackRoute: string } = JSON.parse(configElementAttribute);
+	const configElement = window.document.getElementById(
+		"vscode-workbench-web-configuration",
+	);
+	const configElementAttribute = configElement
+		? configElement.getAttribute("data-settings")
+		: undefined;
+	if (!configElement || !configElementAttribute) {
+		throw new Error("Missing web configuration element");
+	}
+	const config: IWorkbenchConstructionOptions & {
+		folderUri?: UriComponents;
+		workspaceUri?: UriComponents;
+		callbackRoute: string;
+	} = JSON.parse(configElementAttribute);
 
-    create(window.document.body, {
-        ...config,
-        workspaceProvider: WorkspaceProvider.create(config),
-        urlCallbackProvider: new LocalStorageURLCallbackProvider(config.callbackRoute)
-    });
-
+	create(window.document.body, {
+		...config,
+		workspaceProvider: WorkspaceProvider.create(config),
+		urlCallbackProvider: new LocalStorageURLCallbackProvider(
+			config.callbackRoute,
+		),
+	});
 })();
