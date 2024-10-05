@@ -19,10 +19,10 @@
 	"description": "Provides a file provider for web tests to access local files and folders.",
 	"devDependencies": {
 		"minimatch": "10.0.1",
-		"path-browserify": "^1.0.1",
-		"process": "^0.11.10",
-		"request-light": "^0.8.0",
-		"ts-loader": "^9.5.1"
+		"path-browserify": "1.0.1",
+		"process": "0.11.10",
+		"request-light": "0.8.0",
+		"ts-loader": "9.5.1"
 	},
 	"displayName": "vscode-test-web file system provider",
 	"enabledApiProposals": [
