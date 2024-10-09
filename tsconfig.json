@@ -1,18 +1,18 @@
 {
-    "compilerOptions": {
-        "incremental": true,
-        "composite": true
-    },
-    "files": [],
-    "references": [
-        {
-            "path": "./src/server/tsconfig.json"
-        },
-        {
-            "path": "./src/browser/tsconfig-esm.json"
-        },
-        {
-            "path": "./src/browser/tsconfig-amd.json"
-        }
-    ]
+	"compilerOptions": {
+		"incremental": true,
+		"composite": true
+	},
+	"files": [],
+	"references": [
+		{
+			"path": "./src/server/tsconfig.json"
+		},
+		{
+			"path": "./src/browser/tsconfig-esm.json"
+		},
+		{
+			"path": "./src/browser/tsconfig-amd.json"
+		}
+	]
 }
