@@ -32,19 +32,13 @@ export async function getDownloadURL(
 ): Promise<string | undefined> {
 	return new Promise((resolve, reject) => {
 		const url = `https://update.code.visualstudio.com/commit:${commit}/web-standalone/${quality}`;
-		const httpLibrary = url.startsWith("https") ? https : http;
-		httpLibrary.get(url, { method: "HEAD", ...getAgent(url) }, (res) => {
-			console.log(res.statusCode, res.headers.location);
-			if (
-				(res.statusCode === 301 ||
-					res.statusCode === 302 ||
-					res.statusCode === 307) &&
-				res.headers.location
-			) {
+		https.get(url, { method: 'HEAD', ...getAgent(url) }, res => {
+			if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307) && res.headers.location) {
 				resolve(res.headers.location);
 			} else {
 				resolve(undefined);
 			}
+			res.resume(); // Discard response body
 		});
 	});
 }
@@ -85,7 +79,8 @@ async function downloadAndUntar(
 
 				received += chunk.length;
 			});
-			res.on("end", () => {
+			res.on('error', reject);
+			res.on('end', () => {
 				if (timeout) {
 					clearTimeout(timeout);
 				}
