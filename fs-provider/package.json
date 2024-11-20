@@ -1,5 +1,8 @@
 {
-	"description": "Provides a file provider for web tests to access local files and folders.",
+	"activationEvents": [
+		"onFileSystem:vscode-test-web",
+		"onSearch:vscode-test-web"
+	],
 	"browser": "./dist/fsExtensionMain.js",
 	"contributes": {
 		"resourceLabelFormatters": [
@@ -13,10 +16,7 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"onFileSystem:vscode-test-web",
-		"onSearch:vscode-test-web"
-	],
+	"description": "Provides a file provider for web tests to access local files and folders.",
 	"devDependencies": {
 		"minimatch": "10.0.1",
 		"path-browserify": "1.0.1",

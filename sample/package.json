@@ -1,5 +1,7 @@
 {
-	"description": "",
+	"activationEvents": [
+		"*"
+	],
 	"browser": "./dist/web/extension.js",
 	"contributes": {
 		"commands": [
@@ -13,9 +15,7 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"*"
-	],
+	"description": "",
 	"devDependencies": {
 		"assert": "2.1.0",
 		"process": "0.11.10",
