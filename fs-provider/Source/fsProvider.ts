@@ -70,14 +70,18 @@ export class MemFileSystemProvider
 
 	async stat(resource: Uri): Promise<FileStat> {
 		const entry = await this._lookup(resource, false);
+
 		return entry.stats;
 	}
 
 	async readDirectory(resource: Uri): Promise<[string, FileType][]> {
 		const entry = await this._lookupAsDirectory(resource, false);
+
 		const entries = await entry.entries;
+
 		const result: [string, FileType][] = [];
 		entries.forEach((child, name) => result.push([name, child.type]));
+
 		return result;
 	}
 
@@ -85,6 +89,7 @@ export class MemFileSystemProvider
 
 	async readFile(resource: Uri): Promise<Uint8Array> {
 		const entry = await this._lookupAsFile(resource, false);
+
 		return entry.content;
 	}
 
@@ -94,9 +99,13 @@ export class MemFileSystemProvider
 		opts: { create: boolean; overwrite: boolean },
 	): Promise<void> {
 		const basename = Utils.basename(uri);
+
 		const parent = await this._lookupParentDirectory(uri);
+
 		const entries = await parent.entries;
+
 		let entry = entries.get(basename);
+
 		if (entry && entry.type === FileType.Directory) {
 			throw FileSystemError.FileIsADirectory(uri);
 		}
@@ -107,6 +116,7 @@ export class MemFileSystemProvider
 			throw FileSystemError.FileExists(uri);
 		}
 		const stats = newFileStat(FileType.File, content.byteLength);
+
 		if (!entry) {
 			entry = {
 				type: FileType.File,
@@ -135,9 +145,11 @@ export class MemFileSystemProvider
 		}
 
 		const entry = await this._lookup(from, false);
+
 		const oldParent = await this._lookupParentDirectory(from);
 
 		const newParent = await this._lookupParentDirectory(to);
+
 		const newName = Utils.basename(to);
 
 		const oldParentEntries = await oldParent.entries;
@@ -157,9 +169,13 @@ export class MemFileSystemProvider
 
 	async delete(uri: Uri, opts: { recursive: boolean }): Promise<void> {
 		const dirname = Utils.dirname(uri);
+
 		const basename = Utils.basename(uri);
+
 		const parent = await this._lookupAsDirectory(dirname, false);
+
 		const parentEntries = await parent.entries;
+
 		if (parentEntries.has(basename)) {
 			parentEntries.delete(basename);
 			parent.stats = newFileStat(parent.type, -1);
@@ -172,8 +188,11 @@ export class MemFileSystemProvider
 
 	async createDirectory(uri: Uri): Promise<void> {
 		const basename = Utils.basename(uri);
+
 		const dirname = Utils.dirname(uri);
+
 		const parent = await this._lookupAsDirectory(dirname, false);
+
 		const parentEntries = await parent.entries;
 
 		const entry: Directory = {
@@ -183,6 +202,7 @@ export class MemFileSystemProvider
 			entries: Promise.resolve(new Map()),
 		};
 		parentEntries.set(entry.name, entry);
+
 		const stats = await parent.stats;
 		parent.stats = modifiedFileStat(stats, stats.size + 1);
 		this._fireSoon(
@@ -204,8 +224,10 @@ export class MemFileSystemProvider
 		const glob = pattern ? new Minimatch(pattern) : undefined;
 
 		const result: Uri[] = [];
+
 		const dive = async (folderUri: Uri) => {
 			const directory = await this._lookupAsDirectory(folderUri, false);
+
 			for (const [name, entry] of await directory.entries) {
 				/* support options.includes && options.excludes */
 
@@ -217,6 +239,7 @@ export class MemFileSystemProvider
 				}
 
 				const uri = Uri.joinPath(folderUri, entry.name);
+
 				if (entry.type === FileType.File) {
 					const toMatch = uri.toString();
 					// Pattern is always blank: https://github.com/microsoft/vscode/issues/200892
@@ -230,6 +253,7 @@ export class MemFileSystemProvider
 		};
 
 		await dive(options.folder);
+
 		return result;
 	}
 
@@ -252,12 +276,15 @@ export class MemFileSystemProvider
 			}
 		}
 		let entry: Entry | undefined = this.root;
+
 		const parts = uri.path.split("/");
+
 		for (const part of parts) {
 			if (!part) {
 				continue;
 			}
 			let child: Entry | undefined;
+
 			if (entry.type === FileType.Directory) {
 				child = (await entry.entries).get(part);
 			}
@@ -278,6 +305,7 @@ export class MemFileSystemProvider
 		silent: boolean,
 	): Promise<Directory> {
 		const entry = await this._lookup(uri, silent);
+
 		if (entry?.type === FileType.Directory) {
 			return entry;
 		}
@@ -286,6 +314,7 @@ export class MemFileSystemProvider
 
 	private async _lookupAsFile(uri: Uri, silent: boolean): Promise<File> {
 		const entry = await this._lookup(uri, silent);
+
 		if (!entry) {
 			throw FileSystemError.FileNotFound(uri);
 		}
@@ -297,6 +326,7 @@ export class MemFileSystemProvider
 
 	private _lookupParentDirectory(uri: Uri): Promise<Directory> {
 		const dirname = Utils.dirname(uri);
+
 		return this._lookupAsDirectory(dirname, false);
 	}
 

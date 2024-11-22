@@ -48,6 +48,7 @@ class Workbench {
 
 		try {
 			const workbenchTemplate = await readFileInRepo(`views/workbench${this.esm ? '-esm' : ''}.html`);
+
 			return workbenchTemplate.replace(/\{\{([^}]+)\}\}/g, (_, key) => values[key] ?? 'undefined');
 		} catch (e) {
 			return String(e);
@@ -56,8 +57,10 @@ class Workbench {
 
 	async getMain() {
 		const lines: string[] = [];
+
 		if (this.esm) {
 			let workbenchMain = await readFileInRepo(`out/browser/esm/main.js`);
+
 			if (this.dev) {
 				lines.push(
 					"<script>",
@@ -92,6 +95,7 @@ class Workbench {
 			let workbenchMain = await readFileInRepo(`out/browser/amd/main.js`); // defines a AMD module `vscode-web-browser-main`
 			workbenchMain = workbenchMain.replace('./workbench.api', `vs/workbench/workbench.web.main`);
 			workbenchMain = workbenchMain + '\nrequire(["vscode-web-browser-main"], function() { });';
+
 			if (this.dev) {
 
 			} else {
@@ -115,6 +119,7 @@ async function getWorkbenchOptions(
 ): Promise<IWorkbenchOptions> {
 	const options: IWorkbenchOptions = {};
 	options.productConfiguration = { enableTelemetry: false };
+
 	if (config.extensionPaths) {
 		const extensionPromises = config.extensionPaths.map((extensionPath, index) => {
 			return scanForExtensions(extensionPath, {
@@ -139,8 +144,10 @@ async function getWorkbenchOptions(
 			config.extensionDevelopmentPath,
 			{ scheme: ctx.protocol, authority: ctx.host, path: '/static/devextensions' },
 		);
+
 		if (config.extensionTestsPath) {
 			let relativePath = path.relative(config.extensionDevelopmentPath, config.extensionTestsPath);
+
 			if (process.platform === 'win32') {
 				relativePath = relativePath.replace(/\\/g, '/');
 			}
@@ -178,9 +185,12 @@ export default function (config: IConfig): Router.Middleware {
 	router.use(async (ctx, next) => {
 		if (config.build.type === 'sources') {
 			const builtInExtensions = await getScannedBuiltinExtensions(config.build.location);
+
 			const productOverrides = await getProductOverrides(config.build.location);
+
 			const esm = config.esm || await isESM(config.build.location);
 			console.log('Using ESM loader:', esm);
+
 			const devCSSModules = esm ? await getDevCssModules(config.build.location) : [];
 			ctx.state.workbench = new Workbench(`${ctx.protocol}://${ctx.host}/static/sources`, true, esm, devCSSModules, builtInExtensions, {
 				...productOverrides,
@@ -206,6 +216,7 @@ export default function (config: IConfig): Router.Middleware {
 	router.get('/', async ctx => {
 		const options = await getWorkbenchOptions(ctx, config);
 		ctx.body = await ctx.state.workbench.render(options);
+
 		if (config.coi) {
 			ctx.set('Cross-Origin-Opener-Policy', 'same-origin');
 			ctx.set('Cross-Origin-Embedder-Policy', 'require-corp');
@@ -231,12 +242,14 @@ async function getDevCssModules(vsCodeDevLocation: string): Promise<string[]> {
 async function isESM(vsCodeDevLocation: string): Promise<boolean> {
 	try {
 		const packageJSON = await fs.readFile(path.join(vsCodeDevLocation, 'out', 'package.json'));
+
 		return JSON.parse(packageJSON.toString()).type === 'module';
 	} catch (e) {
 		// ignore
 	}
 	try {
 		const packageJSON = await fs.readFile(path.join(vsCodeDevLocation, 'package.json'));
+
 		return JSON.parse(packageJSON.toString()).type === 'module';
 	} catch (e) {
 		return false;

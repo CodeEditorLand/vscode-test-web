@@ -18,6 +18,7 @@ export const fsProviderFolderUri = "vscode-test-web://mount/";
 
 export function configureMounts(config: IConfig, app: Koa): void {
 	const folderMountPath = config.folderMountPath;
+
 	if (folderMountPath) {
 		console.log(
 			`Serving local content ${folderMountPath} at ${mountPrefix}`,
@@ -49,6 +50,7 @@ function fileOps(
 				folderMountPath,
 				decodeURIComponent(ctx.path.substring(mountPrefix.length)),
 			);
+
 			try {
 				const stats = await fs.stat(p);
 				ctx.body = {
@@ -65,6 +67,7 @@ function fileOps(
 				folderMountPath,
 				decodeURIComponent(ctx.path.substring(mountPrefix.length)),
 			);
+
 			try {
 				const entries = await fs.readdir(p, { withFileTypes: true });
 				ctx.body = entries.map((d) => ({
@@ -78,6 +81,7 @@ function fileOps(
 			return next();
 		}
 	});
+
 	return router.routes();
 }
 

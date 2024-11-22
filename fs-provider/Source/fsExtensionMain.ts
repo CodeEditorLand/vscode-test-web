@@ -22,6 +22,7 @@ export function activate(context: ExtensionContext) {
 		path: "/static/mount",
 		query: undefined,
 	});
+
 	const serverBackedRootDirectory = new ServerBackedDirectory(
 		serverUri,
 		[],
@@ -33,6 +34,7 @@ export function activate(context: ExtensionContext) {
 		serverBackedRootDirectory,
 		context.extensionUri,
 	);
+
 	const disposable = workspace.registerFileSystemProvider(
 		SCHEME,
 		memFsProvider,
@@ -54,6 +56,7 @@ class ServerBackedFile implements File {
 	readonly type = FileType.File;
 	private _stats: Promise<FileStat> | undefined;
 	private _content: Promise<Uint8Array> | undefined;
+
 	constructor(
 		private readonly _serverRoot: Uri,
 		public pathSegments: readonly string[],
@@ -83,6 +86,7 @@ class ServerBackedDirectory implements Directory {
 	readonly type = FileType.Directory;
 	private _stats: Promise<FileStat> | undefined;
 	private _entries: Promise<Map<string, Entry>> | undefined;
+
 	constructor(
 		private readonly _serverRoot: Uri,
 		public pathSegments: readonly string[],
@@ -140,18 +144,23 @@ async function getEntries(
 	const url = getServerUri(serverRoot, pathSegments)
 		.with({ query: "readdir" })
 		.toString(/*skipEncoding*/ true);
+
 	const response = await xhr({ url });
+
 	if (response.status === 200 && response.status <= 204) {
 		try {
 			const res = JSON.parse(response.responseText);
+
 			if (Array.isArray(res)) {
 				const entries = new Map();
+
 				for (const r of res) {
 					if (isEntry(r)) {
 						const newPathSegments = [
 							...pathSegments,
 							encodeURIComponent(r.name),
 						];
+
 						const newEntry: Entry =
 							r.type === FileType.Directory
 								? new ServerBackedDirectory(
@@ -186,12 +195,16 @@ async function getStats(
 	pathSegments: readonly string[],
 ): Promise<FileStat> {
 	const serverUri = getServerUri(serverRoot, pathSegments);
+
 	const url = serverUri
 		.with({ query: "stat" })
 		.toString(/*skipEncoding*/ true);
+
 	const response = await xhr({ url });
+
 	if (response.status === 200 && response.status <= 204) {
 		const res = JSON.parse(response.responseText);
+
 		if (isStat(res)) {
 			return res;
 		}
@@ -209,9 +222,11 @@ async function getContent(
 	pathSegments: readonly string[],
 ): Promise<Uint8Array> {
 	const serverUri = getServerUri(serverRoot, pathSegments);
+
 	const response = await xhr({
 		url: serverUri.toString(/*skipEncoding*/ true),
 	});
+
 	if (response.status >= 200 && response.status <= 204) {
 		return response.body;
 	}

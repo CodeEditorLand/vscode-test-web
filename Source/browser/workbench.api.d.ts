@@ -211,6 +211,7 @@ interface IAction extends IDisposable {
 	readonly id: string;
 	label: string;
 	tooltip: string;
+
 	class: string | undefined;
 	enabled: boolean;
 	checked?: boolean;
@@ -238,6 +239,7 @@ interface IDisposable {
 
 declare abstract class Disposable implements IDisposable {
 	static readonly None: IDisposable;
+
 	constructor();
 	dispose(): void;
 }
@@ -324,7 +326,9 @@ interface IWorkspaceProvider {
 
 interface ISecretStorageProvider {
 	type: "in-memory" | "persisted" | "unknown";
+
 	get(key: string): Promise<string | undefined>;
+
 	set(key: string, value: string): Promise<void>;
 	delete(key: string): Promise<void>;
 }
@@ -1757,6 +1761,7 @@ declare class RemoteAuthorityResolverError extends Error {
 	static isTemporarilyNotAvailable(err: any): boolean;
 	static isNoResolverFound(err: any): err is RemoteAuthorityResolverError;
 	static isHandled(err: any): boolean;
+
 	constructor(
 		message?: string,
 		code?: RemoteAuthorityResolverErrorCode,

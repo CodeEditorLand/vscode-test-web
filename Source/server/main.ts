@@ -50,12 +50,15 @@ export async function runServer(
 	config: IConfig,
 ): Promise<IServer> {
 	const app = await createApp(config);
+
 	try {
 		const server = app.listen(port, host);
 		console.log(`Listening on http://${host}:${port}`);
+
 		return server;
 	} catch (e) {
 		console.error(`Failed to listen to port ${port} on host ${host}`, e);
+
 		throw e;
 	}
 }

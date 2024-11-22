@@ -35,6 +35,7 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 			credentials: true,
 			origin: (ctx: Koa.Context) => {
 				const origin = ctx.get("Origin");
+
 				if (
 					/^https:\/\/[^.]+\.vscode-cdn\.net$/.test(origin) || // needed for the webviewContent
 					/^https:\/\/[^.]+\.vscode-webview\.net$/.test(origin) ||
@@ -54,6 +55,7 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 		// CSP: frame-ancestors
 		app.use((ctx, next) => {
 			ctx.set("Content-Security-Policy", `frame-ancestors 'none'`);
+
 			return next();
 		});
 	}
@@ -62,6 +64,7 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 	app.use((ctx, next) => {
 		// set COOP/COEP depending on vscode-coi-flags
 		const value = ctx.query["vscode-coi"];
+
 		if (value === "1") {
 			ctx.set("Cross-Origin-Opener-Policy", "same-origin");
 		} else if (value === "2") {
@@ -73,12 +76,14 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 
 		// set CORP on all resources
 		ctx.set("Cross-Origin-Resource-Policy", "cross-origin");
+
 		return next();
 	});
 
 	// shift the line numbers of source maps in extensions by 2 as the content is wrapped by an anonymous function
 	app.use(async (ctx, next) => {
 		await next();
+
 		if (
 			ctx.status === 200 &&
 			ctx.path.match(/\/(dev)?extensions\/.*\.js\.map$/) &&
@@ -86,6 +91,7 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 		) {
 			// we know it's a ReadStream as that's what kstatic uses
 			const chunks: Buffer[] = [];
+
 			for await (const chunk of ctx.body) {
 				chunks.push(Buffer.from(chunk));
 			}

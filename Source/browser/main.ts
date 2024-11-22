@@ -30,7 +30,9 @@ class WorkspaceProvider implements IWorkspaceProvider {
 		},
 	) {
 		let foundWorkspace = false;
+
 		let workspace: IWorkspace;
+
 		let payload = Object.create(null);
 
 		const query = new URL(document.location.href).searchParams;
@@ -40,18 +42,21 @@ class WorkspaceProvider implements IWorkspaceProvider {
 				case WorkspaceProvider.QUERY_PARAM_FOLDER:
 					workspace = { folderUri: URI.parse(value) };
 					foundWorkspace = true;
+
 					break;
 
 				// Workspace
 				case WorkspaceProvider.QUERY_PARAM_WORKSPACE:
 					workspace = { workspaceUri: URI.parse(value) };
 					foundWorkspace = true;
+
 					break;
 
 				// Empty
 				case WorkspaceProvider.QUERY_PARAM_EMPTY_WINDOW:
 					workspace = undefined;
 					foundWorkspace = true;
+
 					break;
 
 				// Payload
@@ -98,9 +103,11 @@ class WorkspaceProvider implements IWorkspaceProvider {
 		}
 
 		const targetHref = this.createTargetUrl(workspace, options);
+
 		if (targetHref) {
 			if (options?.reuse) {
 				window.location.href = targetHref;
+
 				return true;
 			} else {
 				return !!window.open(targetHref);
@@ -115,6 +122,7 @@ class WorkspaceProvider implements IWorkspaceProvider {
 	): string | undefined {
 		// Empty
 		let targetHref: string | undefined = undefined;
+
 		if (!workspace) {
 			targetHref = `${document.location.origin}${document.location.pathname}?${WorkspaceProvider.QUERY_PARAM_EMPTY_WINDOW}=true`;
 		}
@@ -196,6 +204,7 @@ class LocalStorageURLCallbackProvider
 
 	create(options: Partial<UriComponents> = {}): URI {
 		const id = ++LocalStorageURLCallbackProvider.REQUEST_ID;
+
 		const queryParams: string[] = [`vscode-reqid=${id}`];
 
 		for (const key of LocalStorageURLCallbackProvider.QUERY_KEYS) {
@@ -265,6 +274,7 @@ class LocalStorageURLCallbackProvider
 
 		for (const id of this.pendingCallbacks) {
 			const key = `vscode-web.url-callbacks[${id}]`;
+
 			const result = localStorage.getItem(key);
 
 			if (result !== null) {
@@ -301,9 +311,11 @@ class LocalStorageURLCallbackProvider
 	const configElement = window.document.getElementById(
 		"vscode-workbench-web-configuration",
 	);
+
 	const configElementAttribute = configElement
 		? configElement.getAttribute("data-settings")
 		: undefined;
+
 	if (!configElement || !configElementAttribute) {
 		throw new Error("Missing web configuration element");
 	}

@@ -19,6 +19,7 @@ export async function scanForExtensions(
 	serverURI: URIComponents,
 ): Promise<URIComponents[]> {
 	const result: URIComponents[] = [];
+
 	async function getExtension(
 		relativePosixFolderPath: string,
 	): Promise<URIComponents | undefined> {
@@ -28,6 +29,7 @@ export async function scanForExtensions(
 				relativePosixFolderPath,
 				"package.json",
 			);
+
 			if ((await fs.stat(packageJSONPath)).isFile()) {
 				return {
 					scheme: serverURI.scheme,
@@ -45,13 +47,16 @@ export async function scanForExtensions(
 
 	async function processFolder(relativePosixFolderPath: string) {
 		const extension = await getExtension(relativePosixFolderPath);
+
 		if (extension) {
 			result.push(extension);
 		} else {
 			const folderPath = path.join(rootPath, relativePosixFolderPath);
+
 			const entries = await fs.readdir(folderPath, {
 				withFileTypes: true,
 			});
+
 			for (const entry of entries) {
 				if (entry.isDirectory() && entry.name.charAt(0) !== ".") {
 					await processFolder(
@@ -63,6 +68,7 @@ export async function scanForExtensions(
 	}
 
 	await processFolder("");
+
 	return result;
 }
 
@@ -90,12 +96,15 @@ export async function getScannedBuiltinExtensions(
 		extensionsUtil.scanBuiltinExtensions(
 			path.join(vsCodeDevLocation, "extensions"),
 		);
+
 	const prebuiltExtensions: IScannedBuiltinExtension[] =
 		extensionsUtil.scanBuiltinExtensions(
 			path.join(vsCodeDevLocation, prebuiltExtensionsLocation),
 		);
+
 	for (const ext of localExtensions) {
 		let browserMain: string | undefined = ext.packageJSON.browser;
+
 		if (browserMain) {
 			if (!browserMain.endsWith(".js")) {
 				browserMain = browserMain + ".js";
@@ -106,6 +115,7 @@ export async function getScannedBuiltinExtensions(
 				ext.extensionPath,
 				browserMain,
 			);
+
 			if (!(await fileExists(browserMainLocation))) {
 				console.log(
 					`${browserMainLocation} not found. Make sure all extensions are compiled (use 'yarn watch-web').`,

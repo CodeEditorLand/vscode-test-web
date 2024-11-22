@@ -57,6 +57,7 @@ async function downloadAndUntar(
 	}
 
 	const tar = await import("tar-fs");
+
 	const gunzip = await import("gunzip-maybe");
 
 	return new Promise((resolve, reject) => {
@@ -64,7 +65,9 @@ async function downloadAndUntar(
 
 		httpLibrary.get(downloadUrl, getAgent(downloadUrl), (res) => {
 			const total = Number(res.headers["content-length"]);
+
 			let received = 0;
+
 			let timeout: NodeJS.Timeout | undefined;
 
 			res.on("data", (chunk) => {
@@ -106,14 +109,18 @@ export async function downloadAndUnzipVSCode(
 	commit: string | undefined,
 ): Promise<Static> {
 	let downloadURL: string | undefined;
+
 	if (!commit) {
 		const info = await getLatestBuild(quality);
 		commit = info.version;
+
 		downloadURL = info.url;
 	}
 
 	const folderName = `vscode-web-${quality}-${commit}`;
+
 	const downloadedPath = path.resolve(vscodeTestDir, folderName);
+
 	if (
 		existsSync(downloadedPath) &&
 		existsSync(path.join(downloadedPath, "version"))
@@ -128,6 +135,7 @@ export async function downloadAndUnzipVSCode(
 
 	if (!downloadURL) {
 		downloadURL = await getDownloadURL(quality, commit);
+
 		if (!downloadURL) {
 			throw Error(
 				`Failed to find a download for ${quality} and ${commit}`,
@@ -152,6 +160,7 @@ export async function downloadAndUnzipVSCode(
 		await fs.writeFile(path.join(downloadedPath, "version"), folderName);
 	} catch (err) {
 		console.error(err);
+
 		throw Error(
 			`Failed to download and unpack ${productName}.${commit ? " Did you specify a valid commit?" : ""}`,
 		);
@@ -191,6 +200,7 @@ export async function fetch(api: string): Promise<string> {
 
 export async function fetchJSON<T>(api: string): Promise<T> {
 	const data = await fetch(api);
+
 	try {
 		return JSON.parse(data);
 	} catch (err) {
@@ -199,6 +209,7 @@ export async function fetchJSON<T>(api: string): Promise<T> {
 }
 
 let PROXY_AGENT: HttpProxyAgent<string> | undefined = undefined;
+
 let HTTPS_PROXY_AGENT: HttpsProxyAgent<string> | undefined = undefined;
 
 if (process.env.npm_config_proxy) {
@@ -211,7 +222,9 @@ if (process.env.npm_config_https_proxy) {
 
 function getAgent(url: string): https.RequestOptions {
 	const parsed = new URL(url);
+
 	const options: https.RequestOptions = {};
+
 	if (PROXY_AGENT && parsed.protocol.startsWith("http:")) {
 		options.agent = PROXY_AGENT;
 	}
@@ -226,6 +239,7 @@ function getAgent(url: string): https.RequestOptions {
 export async function directoryExists(path: string): Promise<boolean> {
 	try {
 		const stats = await fs.stat(path);
+
 		return stats.isDirectory();
 	} catch {
 		return false;
@@ -235,6 +249,7 @@ export async function directoryExists(path: string): Promise<boolean> {
 export async function fileExists(path: string): Promise<boolean> {
 	try {
 		const stats = await fs.stat(path);
+
 		return stats.isFile();
 	} catch {
 		return false;

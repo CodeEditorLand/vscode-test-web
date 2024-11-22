@@ -196,7 +196,9 @@ export async function runTests(
 	};
 
 	const host = options.host ?? "localhost";
+
 	const port = options.port ?? 3000;
+
 	const server = await runServer(host, port, config);
 
 	return new Promise(async (s, e) => {
@@ -207,6 +209,7 @@ export async function runTests(
 			browser: playwright.Browser,
 		) => {
 			type Severity = "error" | "warning" | "info";
+
 			const unreportedOutput: { type: Severity; args: unknown[] }[] = [];
 			await page.exposeFunction(
 				"codeAutomationLog",
@@ -232,6 +235,7 @@ export async function runTests(
 						);
 					}
 					server.close();
+
 					if (code === 0) {
 						s();
 					} else {
@@ -241,7 +245,9 @@ export async function runTests(
 			);
 		};
 		console.log(`Opening browser on ${endpoint}...`);
+
 		const context = await openBrowser(endpoint, options, configPage);
+
 		if (context) {
 			context.once("close", () => server.close());
 		} else {
@@ -259,10 +265,13 @@ async function getBuild(options: Options): Promise<Static | Sources> {
 		};
 	}
 	const quality = options.quality || options.version;
+
 	const commit = options.commit;
+
 	const testRunnerDataDir =
 		options.testRunnerDataDir ??
 		path.resolve(process.cwd(), ".vscode-test-web");
+
 	return await downloadAndUnzipVSCode(
 		testRunnerDataDir,
 		quality === "stable" ? "stable" : "insider",
@@ -286,13 +295,16 @@ export async function open(options: Options): Promise<Disposable> {
 	};
 
 	const host = options.host ?? "localhost";
+
 	const port = options.port ?? 3000;
+
 	const server = await runServer(host, port, config);
 
 	const endpoint = `http://${host}:${port}`;
 
 	const context = await openBrowser(endpoint, options);
 	context?.once("close", () => server.close());
+
 	return {
 		dispose: () => {
 			server.close();
@@ -314,8 +326,10 @@ async function openBrowser(
 	}
 
 	const browserType = await playwright[options.browserType];
+
 	if (!browserType) {
 		console.error(`Can not open browser type: ${options.browserType}`);
+
 		return undefined;
 	}
 
@@ -341,7 +355,9 @@ async function openBrowser(
 		args,
 		devtools: options.devTools,
 	});
+
 	const context = await browser.newContext({ viewport: null });
+
 	if (options.permissions) {
 		context.grantPermissions(options.permissions);
 	}
@@ -352,6 +368,7 @@ async function openBrowser(
 		openPages++;
 		page.once("close", () => {
 			openPages--;
+
 			if (openPages === 0) {
 				browser.close();
 			}
@@ -359,6 +376,7 @@ async function openBrowser(
 	});
 
 	const page = context.pages()[0] ?? (await context.newPage());
+
 	if (configPage) {
 		await configPage(page, browser);
 	}
@@ -381,6 +399,7 @@ function validateStringOrUndefined(
 	name: keyof CommandLineOptions,
 ): string | undefined {
 	const value = options[name];
+
 	if (value === undefined || typeof value === "string") {
 		return value;
 	}
@@ -395,6 +414,7 @@ async function validatePathOrUndefined(
 	isFile?: boolean,
 ): Promise<string | undefined> {
 	const loc = validateStringOrUndefined(options, name);
+
 	return loc && validatePath(loc, isFile);
 }
 
@@ -403,6 +423,7 @@ function validateBooleanOrUndefined(
 	name: keyof CommandLineOptions,
 ): boolean | undefined {
 	const value = options[name];
+
 	if (value === undefined || typeof value === "boolean") {
 		return value;
 	}
@@ -416,10 +437,12 @@ function validatePrintServerLog(options: CommandLineOptions): boolean {
 		options,
 		"printServerLog",
 	);
+
 	if (printServerLog !== undefined) {
 		return printServerLog;
 	}
 	const hideServerLog = validateBooleanOrUndefined(options, "hideServerLog");
+
 	if (hideServerLog !== undefined) {
 		return !hideServerLog;
 	}
@@ -428,6 +451,7 @@ function validatePrintServerLog(options: CommandLineOptions): boolean {
 
 function validateBrowserType(options: CommandLineOptions): BrowserType {
 	const browserType = options.browser || options.browserType;
+
 	if (browserType === undefined) {
 		return "chromium";
 	}
@@ -497,6 +521,7 @@ async function validateExtensionPaths(
 	}
 	if (Array.isArray(extensionPaths)) {
 		const res: string[] = [];
+
 		for (const extensionPath of extensionPaths) {
 			if (typeof extensionPath === "string") {
 				res.push(await validatePath(extensionPath));
@@ -526,10 +551,12 @@ async function validateExtensionIds(
 	}
 	if (Array.isArray(extensionIds)) {
 		const res: GalleryExtension[] = [];
+
 		for (const extensionId of extensionIds) {
 			const m =
 				typeof extensionId === "string" &&
 				extensionId.match(EXTENSION_IDENTIFIER_PATTERN);
+
 			if (m) {
 				if (m[2]) {
 					res.push({ id: m[1], preRelease: true });
@@ -540,6 +567,7 @@ async function validateExtensionIds(
 				console.log(
 					`Invalid extension id: ${extensionId}. Format is publisher.name[@prerelease].`,
 				);
+
 				break;
 			}
 		}
@@ -554,6 +582,7 @@ async function validateExtensionIds(
 
 async function validatePath(loc: string, isFile?: boolean): Promise<string> {
 	loc = path.resolve(loc);
+
 	if (isFile) {
 		if (!(await fileExists(loc))) {
 			console.log(`'${loc}' must be an existing file.`);
@@ -580,6 +609,7 @@ function validateQuality(
 
 	if (vsCodeDevPath && quality) {
 		console.log(`Sources folder is provided as input, quality is ignored.`);
+
 		return undefined;
 	}
 	if (
@@ -606,6 +636,7 @@ function validateCommit(
 ): string | undefined {
 	if (vsCodeDevPath && commit) {
 		console.log(`Sources folder is provided as input, commit is ignored.`);
+
 		return undefined;
 	}
 	if (
@@ -625,6 +656,7 @@ function validateCommit(
 function validatePortNumber(port: unknown): number | undefined {
 	if (typeof port === "string") {
 		const number = Number.parseInt(port);
+
 		if (!Number.isNaN(number) && number >= 0) {
 			return number;
 		}
@@ -772,37 +804,57 @@ async function cliMain(): Promise<void> {
 			return true;
 		},
 	};
+
 	const args = minimist<CommandLineOptions>(process.argv.slice(2), options);
+
 	if (args.help) {
 		showHelp();
 		process.exit();
 	}
 
 	const browserOptions = validateBrowserOptions(args.browserOption);
+
 	const browserType = validateBrowserType(args);
+
 	const extensionTestsPath = await validatePathOrUndefined(
 		args,
 		"extensionTestsPath",
 		true,
 	);
+
 	const extensionDevelopmentPath = await validatePathOrUndefined(
 		args,
 		"extensionDevelopmentPath",
 	);
+
 	const extensionPaths = await validateExtensionPaths(args.extensionPath);
+
 	const extensionIds = await validateExtensionIds(args.extensionId);
+
 	const vsCodeDevPath = await validatePathOrUndefined(args, "sourcesPath");
+
 	const quality = validateQuality(args.quality, args.version, vsCodeDevPath);
+
 	const commit = validateCommit(args.commit, vsCodeDevPath);
+
 	const devTools = validateBooleanOrUndefined(args, "open-devtools");
+
 	const headless = validateBooleanOrUndefined(args, "headless");
+
 	const permissions = validatePermissions(args.permission);
+
 	const printServerLog = validatePrintServerLog(args);
+
 	const verbose = validateBooleanOrUndefined(args, "verbose");
+
 	const port = validatePortNumber(args.port);
+
 	const host = validateStringOrUndefined(args, "host");
+
 	const coi = validateBooleanOrUndefined(args, "coi");
+
 	const esm = validateBooleanOrUndefined(args, "esm");
+
 	const testRunnerDataDir = validateStringOrUndefined(
 		args,
 		"testRunnerDataDir",
@@ -811,13 +863,17 @@ async function cliMain(): Promise<void> {
 	const waitForDebugger = validatePortNumber(args.waitForDebugger);
 
 	let folderUri = validateStringOrUndefined(args, "folder-uri");
+
 	let folderPath: string | undefined;
 
 	const inputs = args._;
+
 	if (inputs.length) {
 		const input = await validatePath(inputs[0]);
+
 		if (input) {
 			folderPath = input;
+
 			if (folderUri) {
 				console.log(
 					`Local folder provided as input, ignoring 'folder-uri'`,

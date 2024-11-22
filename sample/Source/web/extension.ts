@@ -48,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 						);
 					}
 					let summary = `Found:\n${results.map((uri) => `  - ${uri.path}`).join("\n")}`;
+
 					return vscode.window.showInformationMessage(summary);
 				});
 		},
