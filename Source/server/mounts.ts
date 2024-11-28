@@ -13,7 +13,9 @@ import * as kstatic from "koa-static";
 import { IConfig } from "./main";
 
 const mountPrefix = "/static/mount";
+
 export const fsProviderExtensionPrefix = "/static/extensions/fs";
+
 export const fsProviderFolderUri = "vscode-test-web://mount/";
 
 export function configureMounts(config: IConfig, app: Koa): void {

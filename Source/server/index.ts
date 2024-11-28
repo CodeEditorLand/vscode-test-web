@@ -18,12 +18,14 @@ import {
 import { IConfig, runServer, Sources, Static } from "./main";
 
 export type BrowserType = "chromium" | "firefox" | "webkit" | "none";
+
 export type VSCodeQuality = "insiders" | "stable";
 
 export type GalleryExtension = {
 	readonly id: string;
 	readonly preRelease?: boolean;
 };
+
 export interface Options {
 	/**
 	 * Browser to open: 'chromium' | 'firefox' | 'webkit' | 'none'.
