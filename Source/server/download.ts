@@ -15,6 +15,7 @@ import { Static } from "./main";
 
 interface DownloadInfo {
 	url: string;
+
 	version: string;
 }
 
@@ -32,6 +33,7 @@ export async function getDownloadURL(
 ): Promise<string | undefined> {
 	return new Promise((resolve, reject) => {
 		const url = `https://update.code.visualstudio.com/commit:${commit}/web-standalone/${quality}`;
+
 		https.get(url, { method: "HEAD", ...getAgent(url) }, (res) => {
 			if (
 				(res.statusCode === 301 ||
@@ -43,6 +45,7 @@ export async function getDownloadURL(
 			} else {
 				resolve(undefined);
 			}
+
 			res.resume(); // Discard response body
 		});
 	});
@@ -81,13 +84,16 @@ async function downloadAndUntar(
 						process.stdout.write(
 							`${reset}${message}: ${received}/${total} (${((received / total) * 100).toFixed()}%)`,
 						);
+
 						timeout = undefined;
 					}, 100);
 				}
 
 				received += chunk.length;
 			});
+
 			res.on("error", reject);
+
 			res.on("end", () => {
 				if (timeout) {
 					clearTimeout(timeout);
@@ -99,10 +105,13 @@ async function downloadAndUntar(
 			const extract = res
 				.pipe(gunzip())
 				.pipe(tar.extract(destination, { strip: 1 }));
+
 			extract.on("finish", () => {
 				process.stdout.write(`Extracted to ${destination}\n`);
+
 				resolve();
 			});
+
 			extract.on("error", reject);
 		});
 	});
@@ -117,6 +126,7 @@ export async function downloadAndUnzipVSCode(
 
 	if (!commit) {
 		const info = await getLatestBuild(quality);
+
 		commit = info.version;
 
 		downloadURL = info.url;
@@ -162,6 +172,7 @@ export async function downloadAndUnzipVSCode(
 			downloadedPath,
 			`Downloading ${productName}`,
 		);
+
 		await fs.writeFile(path.join(downloadedPath, "version"), folderName);
 	} catch (err) {
 		console.error(err);
@@ -170,6 +181,7 @@ export async function downloadAndUnzipVSCode(
 			`Failed to download and unpack ${productName}.${commit ? " Did you specify a valid commit?" : ""}`,
 		);
 	}
+
 	return {
 		type: "static",
 		location: downloadedPath,
@@ -181,6 +193,7 @@ export async function downloadAndUnzipVSCode(
 export async function fetch(api: string): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const httpLibrary = api.startsWith("https") ? https : http;
+
 		httpLibrary.get(api, getAgent(api), (res) => {
 			if (res.statusCode !== 200) {
 				reject("Failed to get content from ");
@@ -219,6 +232,7 @@ let HTTPS_PROXY_AGENT: HttpsProxyAgent<string> | undefined = undefined;
 
 if (process.env.npm_config_proxy) {
 	PROXY_AGENT = new HttpProxyAgent(process.env.npm_config_proxy);
+
 	HTTPS_PROXY_AGENT = new HttpsProxyAgent(process.env.npm_config_proxy);
 }
 if (process.env.npm_config_https_proxy) {

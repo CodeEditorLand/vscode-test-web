@@ -20,6 +20,7 @@ import { fsProviderExtensionPrefix, fsProviderFolderUri } from "./mounts";
 
 interface IDevelopmentOptions {
 	extensionTestsPath?: URIComponents;
+
 	extensions?: URIComponents[];
 }
 
@@ -29,11 +30,14 @@ interface IWorkbenchOptions {
 		| URIComponents
 		| GalleryExtensionInfo
 	)[];
+
 	developmentOptions?: IDevelopmentOptions;
+
 	productConfiguration?: { [key: string]: any };
 
 	// options of the builtin workbench (vs/code/browser/workbench/workbench)
 	folderUri?: URIComponents;
+
 	workspaceUri?: URIComponents;
 }
 
@@ -60,6 +64,7 @@ class Workbench {
 				...this.productOverrides,
 			};
 		}
+
 		const values: { [key: string]: string } = {
 			WORKBENCH_WEB_CONFIGURATION: asJSON(workbenchWebConfiguration),
 			WORKBENCH_WEB_BASE_URL: this.baseUrl,
@@ -110,21 +115,26 @@ class Workbench {
 					"document.head.appendChild(importMapElement);",
 					"</script>",
 				);
+
 				workbenchMain = workbenchMain.replace(
 					"./workbench.api",
 					`${this.baseUrl}/out/vs/workbench/workbench.web.main.internal.js`,
 				);
+
 				lines.push(`<script type="module">${workbenchMain}</script>`);
 			} else {
 				workbenchMain = workbenchMain.replace(
 					"./workbench.api",
 					`${this.baseUrl}/out/vs/workbench/workbench.web.main.internal.js`,
 				);
+
 				lines.push(
 					`<script src="${this.baseUrl}/out/nls.messages.js"></script>`,
 				);
+
 				lines.push(`<script type="module">${workbenchMain}</script>`);
 			}
+
 			return lines.join("\n");
 		} else {
 			let workbenchMain = await readFileInRepo(`out/browser/amd/main.js`); // defines a AMD module `vscode-web-browser-main`
@@ -132,6 +142,7 @@ class Workbench {
 				"./workbench.api",
 				`vs/workbench/workbench.web.main`,
 			);
+
 			workbenchMain =
 				workbenchMain +
 				'\nrequire(["vscode-web-browser-main"], function() { });';
@@ -141,15 +152,19 @@ class Workbench {
 				lines.push(
 					`<script src="${this.baseUrl}/out/nls.messages.js"></script>`,
 				);
+
 				lines.push(
 					`<script src="${this.baseUrl}/out/vs/workbench/workbench.web.main.nls.js"></script>`,
 				);
+
 				lines.push(
 					`<script src="${this.baseUrl}/out/vs/workbench/workbench.web.main.js"></script>`,
 				);
 			}
+
 			lines.push(`<script>${workbenchMain}</script>`);
 		}
+
 		return lines.join("\n");
 	}
 
@@ -163,6 +178,7 @@ async function getWorkbenchOptions(
 	config: IConfig,
 ): Promise<IWorkbenchOptions> {
 	const options: IWorkbenchOptions = {};
+
 	options.productConfiguration = { enableTelemetry: false };
 
 	if (config.extensionPaths) {
@@ -175,10 +191,12 @@ async function getWorkbenchOptions(
 				});
 			},
 		);
+
 		options.additionalBuiltinExtensions = (
 			await Promise.all(extensionPromises)
 		).flat();
 	}
+
 	if (config.extensionIds) {
 		if (!options.additionalBuiltinExtensions) {
 			options.additionalBuiltinExtensions = [];
@@ -186,6 +204,7 @@ async function getWorkbenchOptions(
 
 		options.additionalBuiltinExtensions.push(...config.extensionIds);
 	}
+
 	if (config.extensionDevelopmentPath) {
 		const developmentOptions: IDevelopmentOptions =
 			(options.developmentOptions = {});
@@ -208,6 +227,7 @@ async function getWorkbenchOptions(
 			if (process.platform === "win32") {
 				relativePath = relativePath.replace(/\\/g, "/");
 			}
+
 			developmentOptions.extensionTestsPath = {
 				scheme: ctx.protocol,
 				authority: ctx.host,
@@ -215,15 +235,18 @@ async function getWorkbenchOptions(
 			};
 		}
 	}
+
 	if (config.folderMountPath) {
 		if (!options.additionalBuiltinExtensions) {
 			options.additionalBuiltinExtensions = [];
 		}
+
 		options.additionalBuiltinExtensions.push({
 			scheme: ctx.protocol,
 			authority: ctx.host,
 			path: fsProviderExtensionPrefix,
 		});
+
 		options.folderUri = URI.parse(fsProviderFolderUri);
 
 		options.productConfiguration.extensionEnabledApiProposals = {
@@ -240,6 +263,7 @@ async function getWorkbenchOptions(
 			path: `/default.code-workspace`,
 		});
 	}
+
 	return options;
 }
 
@@ -257,11 +281,13 @@ export default function (config: IConfig): Router.Middleware {
 			);
 
 			const esm = config.esm || (await isESM(config.build.location));
+
 			console.log("Using ESM loader:", esm);
 
 			const devCSSModules = esm
 				? await getDevCssModules(config.build.location)
 				: [];
+
 			ctx.state.workbench = new Workbench(
 				`${ctx.protocol}://${ctx.host}/static/sources`,
 				true,
@@ -276,6 +302,7 @@ export default function (config: IConfig): Router.Middleware {
 			);
 		} else if (config.build.type === "static") {
 			const baseUrl = `${ctx.protocol}://${ctx.host}/static/build`;
+
 			ctx.state.workbench = new Workbench(
 				baseUrl,
 				false,
@@ -295,6 +322,7 @@ export default function (config: IConfig): Router.Middleware {
 				[],
 			);
 		}
+
 		await next();
 	});
 
@@ -304,10 +332,12 @@ export default function (config: IConfig): Router.Middleware {
 
 	router.get("/", async (ctx) => {
 		const options = await getWorkbenchOptions(ctx, config);
+
 		ctx.body = await ctx.state.workbench.render(options);
 
 		if (config.coi) {
 			ctx.set("Cross-Origin-Opener-Policy", "same-origin");
+
 			ctx.set("Cross-Origin-Embedder-Policy", "require-corp");
 		}
 	});
@@ -333,6 +363,7 @@ async function getProductOverrides(
 
 async function getDevCssModules(vsCodeDevLocation: string): Promise<string[]> {
 	const glob = await import("glob");
+
 	return glob.glob("**/*.css", { cwd: path.join(vsCodeDevLocation, "out") });
 }
 
@@ -346,6 +377,7 @@ async function isESM(vsCodeDevLocation: string): Promise<boolean> {
 	} catch (e) {
 		// ignore
 	}
+
 	try {
 		const packageJSON = await fs.readFile(
 			path.join(vsCodeDevLocation, "package.json"),

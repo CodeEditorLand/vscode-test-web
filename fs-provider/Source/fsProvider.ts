@@ -25,15 +25,21 @@ import { Utils } from "vscode-uri";
 
 export interface File {
 	readonly type: FileType.File;
+
 	name: string;
+
 	stats: Promise<FileStat>;
+
 	content: Promise<Uint8Array>;
 }
 
 export interface Directory {
 	readonly type: FileType.Directory;
+
 	name: string;
+
 	stats: Promise<FileStat>;
+
 	entries: Promise<Map<string, Entry>>;
 }
 
@@ -80,6 +86,7 @@ export class MemFileSystemProvider
 		const entries = await entry.entries;
 
 		const result: [string, FileType][] = [];
+
 		entries.forEach((child, name) => result.push([name, child.type]));
 
 		return result;
@@ -109,12 +116,15 @@ export class MemFileSystemProvider
 		if (entry && entry.type === FileType.Directory) {
 			throw FileSystemError.FileIsADirectory(uri);
 		}
+
 		if (!entry && !opts.create) {
 			throw FileSystemError.FileNotFound(uri);
 		}
+
 		if (entry && opts.create && !opts.overwrite) {
 			throw FileSystemError.FileExists(uri);
 		}
+
 		const stats = newFileStat(FileType.File, content.byteLength);
 
 		if (!entry) {
@@ -124,12 +134,16 @@ export class MemFileSystemProvider
 				stats,
 				content: Promise.resolve(content),
 			};
+
 			entries.set(basename, entry);
+
 			this._fireSoon({ type: FileChangeType.Created, uri });
 		} else {
 			entry.stats = stats;
+
 			entry.content = Promise.resolve(content);
 		}
+
 		this._fireSoon({ type: FileChangeType.Changed, uri });
 	}
 
@@ -159,6 +173,7 @@ export class MemFileSystemProvider
 		entry.name = newName;
 
 		const newParentEntries = await newParent.entries;
+
 		newParentEntries.set(newName, entry);
 
 		this._fireSoon(
@@ -178,7 +193,9 @@ export class MemFileSystemProvider
 
 		if (parentEntries.has(basename)) {
 			parentEntries.delete(basename);
+
 			parent.stats = newFileStat(parent.type, -1);
+
 			this._fireSoon(
 				{ type: FileChangeType.Changed, uri: dirname },
 				{ uri, type: FileChangeType.Deleted },
@@ -201,10 +218,13 @@ export class MemFileSystemProvider
 			stats: newFileStat(FileType.Directory, 0),
 			entries: Promise.resolve(new Map()),
 		};
+
 		parentEntries.set(entry.name, entry);
 
 		const stats = await parent.stats;
+
 		parent.stats = modifiedFileStat(stats, stats.size + 1);
+
 		this._fireSoon(
 			{ type: FileChangeType.Changed, uri: dirname },
 			{ type: FileChangeType.Created, uri },
@@ -260,10 +280,12 @@ export class MemFileSystemProvider
 	// --- lookup
 
 	private async _lookup(uri: Uri, silent: false): Promise<Entry>;
+
 	private async _lookup(
 		uri: Uri,
 		silent: boolean,
 	): Promise<Entry | undefined>;
+
 	private async _lookup(
 		uri: Uri,
 		silent: boolean,
@@ -275,6 +297,7 @@ export class MemFileSystemProvider
 				return undefined;
 			}
 		}
+
 		let entry: Entry | undefined = this.root;
 
 		const parts = uri.path.split("/");
@@ -283,11 +306,13 @@ export class MemFileSystemProvider
 			if (!part) {
 				continue;
 			}
+
 			let child: Entry | undefined;
 
 			if (entry.type === FileType.Directory) {
 				child = (await entry.entries).get(part);
 			}
+
 			if (!child) {
 				if (!silent) {
 					throw FileSystemError.FileNotFound(uri);
@@ -295,8 +320,10 @@ export class MemFileSystemProvider
 					return undefined;
 				}
 			}
+
 			entry = child;
 		}
+
 		return entry;
 	}
 
@@ -309,6 +336,7 @@ export class MemFileSystemProvider
 		if (entry?.type === FileType.Directory) {
 			return entry;
 		}
+
 		throw FileSystemError.FileNotADirectory(uri);
 	}
 
@@ -318,9 +346,11 @@ export class MemFileSystemProvider
 		if (!entry) {
 			throw FileSystemError.FileNotFound(uri);
 		}
+
 		if (entry.type === FileType.File) {
 			return entry;
 		}
+
 		throw FileSystemError.FileIsADirectory(uri);
 	}
 
@@ -333,10 +363,12 @@ export class MemFileSystemProvider
 	// --- manage file events
 
 	private readonly _onDidChangeFile = new EventEmitter<FileChangeEvent[]>();
+
 	readonly onDidChangeFile: Event<FileChangeEvent[]> =
 		this._onDidChangeFile.event;
 
 	private _bufferedChanges: FileChangeEvent[] = [];
+
 	private _fireSoonHandle?: NodeJS.Timeout;
 
 	watch(
@@ -356,6 +388,7 @@ export class MemFileSystemProvider
 
 		this._fireSoonHandle = setTimeout(() => {
 			this._onDidChangeFile.fire(this._bufferedChanges);
+
 			this._bufferedChanges.length = 0;
 		}, 5);
 	}

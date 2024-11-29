@@ -4,9 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 interface UriComponents {
 	scheme?: string;
+
 	authority?: string;
+
 	path?: string;
+
 	query?: string;
+
 	fragment?: string;
 }
 
@@ -82,9 +86,13 @@ declare class URI implements UriComponents {
 	 */
 	static from(components: {
 		readonly scheme: string;
+
 		readonly authority?: string;
+
 		readonly path?: string;
+
 		readonly query?: string;
+
 		readonly fragment?: string;
 	}): URI;
 
@@ -164,9 +172,13 @@ declare class URI implements UriComponents {
 	 */
 	with(change: {
 		scheme?: string;
+
 		authority?: string;
+
 		path?: string;
+
 		query?: string;
+
 		fragment?: string;
 	}): URI;
 
@@ -197,11 +209,15 @@ declare class URI implements UriComponents {
 	toJSON(): any;
 
 	static revive(data: UriComponents | URI): URI;
+
 	static revive(data: UriComponents | URI | undefined): URI | undefined;
+
 	static revive(data: UriComponents | URI | null): URI | null;
+
 	static revive(
 		data: UriComponents | URI | undefined | null,
 	): URI | undefined | null;
+
 	static revive(
 		data: UriComponents | URI | undefined | null,
 	): URI | undefined | null;
@@ -209,18 +225,25 @@ declare class URI implements UriComponents {
 
 interface IAction extends IDisposable {
 	readonly id: string;
+
 	label: string;
+
 	tooltip: string;
 
 	class: string | undefined;
+
 	enabled: boolean;
+
 	checked?: boolean;
+
 	run(event?: unknown): unknown;
 }
 
 interface TunnelPrivacy {
 	themeIcon: string;
+
 	id: string;
+
 	label: string;
 }
 
@@ -230,6 +253,7 @@ interface TunnelProviderFeatures {
 	 * @deprecated
 	 */
 	public?: boolean;
+
 	privacyOptions: TunnelPrivacy[];
 }
 
@@ -241,6 +265,7 @@ declare abstract class Disposable implements IDisposable {
 	static readonly None: IDisposable;
 
 	constructor();
+
 	dispose(): void;
 }
 
@@ -258,25 +283,35 @@ interface Event<T> {
 
 interface EmitterOptions {
 	onFirstListenerAdd?: Function;
+
 	onFirstListenerDidAdd?: Function;
+
 	onListenerDidAdd?: Function;
+
 	onLastListenerRemove?: Function;
 }
 
 declare class Emitter<T> {
 	constructor(options?: EmitterOptions);
+
 	readonly event: Event<T>;
+
 	fire(event: T): void;
+
 	dispose(): void;
 }
 
 interface IWebSocket {
 	readonly onData: Event<ArrayBuffer>;
+
 	readonly onOpen: Event<void>;
+
 	readonly onClose: Event<void>;
+
 	readonly onError: Event<any>;
 
 	send(data: ArrayBuffer | ArrayBufferView): void;
+
 	close(): void;
 }
 
@@ -330,6 +365,7 @@ interface ISecretStorageProvider {
 	get(key: string): Promise<string | undefined>;
 
 	set(key: string, value: string): Promise<void>;
+
 	delete(key: string): Promise<void>;
 }
 
@@ -864,8 +900,11 @@ interface IEditorOptions {
 
 interface ITextEditorSelection {
 	readonly startLineNumber: number;
+
 	readonly startColumn: number;
+
 	readonly endLineNumber?: number;
+
 	readonly endColumn?: number;
 }
 
@@ -1211,6 +1250,7 @@ interface IWorkbenchConstructionOptions {
 	 */
 	readonly profile?: {
 		readonly name: string;
+
 		readonly contents?: string | UriComponents;
 	};
 
@@ -1303,20 +1343,27 @@ interface IWorkbenchConstructionOptions {
 
 export interface IAuthenticationSessionAccount {
 	label: string;
+
 	id: string;
 }
 
 export interface IAuthenticationSession {
 	id: string;
+
 	accessToken: string;
+
 	account: IAuthenticationSessionAccount;
+
 	scopes: ReadonlyArray<string>;
+
 	idToken?: string;
 }
 
 export interface IAuthenticationSessionsChangeEvent {
 	added?: ReadonlyArray<IAuthenticationSession>;
+
 	removed?: ReadonlyArray<IAuthenticationSession>;
+
 	changed?: ReadonlyArray<IAuthenticationSession>;
 }
 
@@ -1445,6 +1492,7 @@ interface IPerformanceMark {
 
 interface IObservableValue<T> {
 	onDidChange: Event<T>;
+
 	readonly value: T;
 }
 
@@ -1466,31 +1514,45 @@ declare const enum ProgressLocation {
 
 interface IProgressOptions {
 	readonly location: ProgressLocation | string;
+
 	readonly title?: string;
+
 	readonly source?: string | { label: string; id: string };
+
 	readonly total?: number;
+
 	readonly cancellable?: boolean;
+
 	readonly buttons?: string[];
 }
 
 interface IProgressNotificationOptions extends IProgressOptions {
 	readonly location: ProgressLocation.Notification;
+
 	readonly primaryActions?: readonly IAction[];
+
 	readonly secondaryActions?: readonly IAction[];
+
 	readonly delay?: number;
+
 	readonly silent?: boolean;
+
 	readonly type?: "syncing" | "loading";
 }
 
 interface IProgressDialogOptions extends IProgressOptions {
 	readonly delay?: number;
+
 	readonly detail?: string;
+
 	readonly sticky?: boolean;
 }
 
 interface IProgressWindowOptions extends IProgressOptions {
 	readonly location: ProgressLocation.Window;
+
 	readonly command?: string;
+
 	readonly type?: "syncing" | "loading";
 }
 
@@ -1500,12 +1562,15 @@ interface IProgressCompositeOptions extends IProgressOptions {
 		| ProgressLocation.Extensions
 		| ProgressLocation.Scm
 		| string;
+
 	readonly delay?: number;
 }
 
 interface IProgressStep {
 	message?: string;
+
 	increment?: number;
+
 	total?: number;
 }
 
@@ -1758,8 +1823,11 @@ declare const enum RemoteAuthorityResolverErrorCode {
 
 declare class RemoteAuthorityResolverError extends Error {
 	static isNotAvailable(err: any): boolean;
+
 	static isTemporarilyNotAvailable(err: any): boolean;
+
 	static isNoResolverFound(err: any): err is RemoteAuthorityResolverError;
+
 	static isHandled(err: any): boolean;
 
 	constructor(

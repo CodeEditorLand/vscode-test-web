@@ -71,6 +71,7 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 			ctx.set("Cross-Origin-Embedder-Policy", "require-corp");
 		} else if (value === "3" || value === "") {
 			ctx.set("Cross-Origin-Opener-Policy", "same-origin");
+
 			ctx.set("Cross-Origin-Embedder-Policy", "require-corp");
 		}
 
@@ -95,7 +96,9 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 			for await (const chunk of ctx.body) {
 				chunks.push(Buffer.from(chunk));
 			}
+
 			const bodyContent = Buffer.concat(chunks).toString("utf-8");
+
 			ctx.response.body = `{"version":3,"file":"${basename(ctx.path)}","sections":[{"offset":{"line":2,"column":0},"map":${bodyContent} }]}`;
 		}
 	});
@@ -106,6 +109,7 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 		console.log(
 			"Serving dev extensions from " + config.extensionDevelopmentPath,
 		);
+
 		app.use(
 			kmount(
 				"/static/devextensions",
@@ -123,12 +127,14 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 		);
 	} else if (config.build.type === "sources") {
 		console.log("Serving VS Code sources from " + config.build.location);
+
 		app.use(
 			kmount(
 				"/static/sources",
 				kstatic(config.build.location, serveOptions),
 			),
 		);
+
 		app.use(
 			kmount(
 				"/static/sources",
@@ -158,6 +164,7 @@ export default async function createApp(config: IConfig): Promise<Koa> {
 			console.log(
 				"Serving additional built-in extensions from " + extensionPath,
 			);
+
 			app.use(
 				kmount(
 					`/static/extensions/${index}`,

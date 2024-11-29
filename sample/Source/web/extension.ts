@@ -47,6 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 							"Find files returned undefined",
 						);
 					}
+
 					let summary = `Found:\n${results.map((uri) => `  - ${uri.path}`).join("\n")}`;
 
 					return vscode.window.showInformationMessage(summary);

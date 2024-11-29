@@ -25,7 +25,9 @@ export function configureMounts(config: IConfig, app: Koa): void {
 		console.log(
 			`Serving local content ${folderMountPath} at ${mountPrefix}`,
 		);
+
 		app.use(fileOps(mountPrefix, folderMountPath));
+
 		app.use(
 			kmount(mountPrefix, kstatic(folderMountPath, { hidden: true })),
 		);
@@ -46,6 +48,7 @@ function fileOps(
 	folderMountPath: string,
 ): Router.Middleware {
 	const router = new Router();
+
 	router.get(`${mountPrefix}(/.*)?`, async (ctx, next) => {
 		if (ctx.query.stat !== undefined) {
 			const p = path.join(
@@ -55,6 +58,7 @@ function fileOps(
 
 			try {
 				const stats = await fs.stat(p);
+
 				ctx.body = {
 					type: getFileType(stats),
 					ctime: stats.ctime.getTime(),
@@ -72,6 +76,7 @@ function fileOps(
 
 			try {
 				const entries = await fs.readdir(p, { withFileTypes: true });
+
 				ctx.body = entries.map((d) => ({
 					name: d.name,
 					type: getFileType(d),
@@ -102,5 +107,6 @@ function getFileType(stats: Stats | Dirent) {
 	} else if (stats.isSymbolicLink()) {
 		return FileType.SymbolicLink;
 	}
+
 	return FileType.Unknown;
 }

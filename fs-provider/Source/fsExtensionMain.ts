@@ -39,12 +39,14 @@ export function activate(context: ExtensionContext) {
 		SCHEME,
 		memFsProvider,
 	);
+
 	context.subscriptions.push(disposable);
 
 	const searchDisposable = workspace.registerFileSearchProvider(
 		SCHEME,
 		memFsProvider,
 	);
+
 	context.subscriptions.push(searchDisposable);
 
 	console.log(
@@ -54,7 +56,9 @@ export function activate(context: ExtensionContext) {
 
 class ServerBackedFile implements File {
 	readonly type = FileType.File;
+
 	private _stats: Promise<FileStat> | undefined;
+
 	private _content: Promise<Uint8Array> | undefined;
 
 	constructor(
@@ -62,21 +66,27 @@ class ServerBackedFile implements File {
 		public pathSegments: readonly string[],
 		public name: string,
 	) {}
+
 	get stats(): Promise<FileStat> {
 		if (this._stats === undefined) {
 			this._stats = getStats(this._serverRoot, this.pathSegments);
 		}
+
 		return this._stats;
 	}
+
 	set stats(stats: Promise<FileStat>) {
 		this._stats = stats;
 	}
+
 	get content(): Promise<Uint8Array> {
 		if (this._content === undefined) {
 			this._content = getContent(this._serverRoot, this.pathSegments);
 		}
+
 		return this._content;
 	}
+
 	set content(content: Promise<Uint8Array>) {
 		this._content = content;
 	}
@@ -84,7 +94,9 @@ class ServerBackedFile implements File {
 
 class ServerBackedDirectory implements Directory {
 	readonly type = FileType.Directory;
+
 	private _stats: Promise<FileStat> | undefined;
+
 	private _entries: Promise<Map<string, Entry>> | undefined;
 
 	constructor(
@@ -92,21 +104,27 @@ class ServerBackedDirectory implements Directory {
 		public pathSegments: readonly string[],
 		public name: string,
 	) {}
+
 	get stats(): Promise<FileStat> {
 		if (this._stats === undefined) {
 			this._stats = getStats(this._serverRoot, this.pathSegments);
 		}
+
 		return this._stats;
 	}
+
 	set stats(stats: Promise<FileStat>) {
 		this._stats = stats;
 	}
+
 	get entries(): Promise<Map<string, Entry>> {
 		if (this._entries === undefined) {
 			this._entries = getEntries(this._serverRoot, this.pathSegments);
 		}
+
 		return this._entries;
 	}
+
 	set entries(entries: Promise<Map<string, Entry>>) {
 		this._entries = entries;
 	}
@@ -173,20 +191,24 @@ async function getEntries(
 										newPathSegments,
 										r.name,
 									);
+
 						entries.set(newEntry.name, newEntry);
 					}
 				}
+
 				return entries;
 			}
 		} catch {
 			// ignore
 		}
+
 		console.log(`Invalid server response format for ${url}.`);
 	} else {
 		console.log(
 			`Invalid server response for ${url}. Status ${response.status}`,
 		);
 	}
+
 	return new Map();
 }
 
@@ -208,10 +230,12 @@ async function getStats(
 		if (isStat(res)) {
 			return res;
 		}
+
 		throw FileSystemError.FileNotFound(
 			`Invalid server response for ${serverUri.toString(/*skipEncoding*/ true)}.`,
 		);
 	}
+
 	throw FileSystemError.FileNotFound(
 		`Invalid server response for ${serverUri.toString(/*skipEncoding*/ true)}. Status ${response.status}.`,
 	);
@@ -230,6 +254,7 @@ async function getContent(
 	if (response.status >= 200 && response.status <= 204) {
 		return response.body;
 	}
+
 	throw FileSystemError.FileNotFound(
 		`Invalid server response for ${serverUri.toString(/*skipEncoding*/ true)}. Status ${response.status}.`,
 	);

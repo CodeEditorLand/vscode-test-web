@@ -10,7 +10,9 @@ import { fileExists } from "./download";
 
 export interface URIComponents {
 	scheme: string;
+
 	authority: string;
+
 	path: string;
 }
 
@@ -77,8 +79,11 @@ export async function scanForExtensions(
 export interface IScannedBuiltinExtension {
 	extensionPath: string; // name of the folder
 	packageJSON: any;
+
 	packageNLS?: any;
+
 	readmePath?: string;
+
 	changelogPath?: string;
 }
 
@@ -109,6 +114,7 @@ export async function getScannedBuiltinExtensions(
 			if (!browserMain.endsWith(".js")) {
 				browserMain = browserMain + ".js";
 			}
+
 			const browserMainLocation = path.join(
 				vsCodeDevLocation,
 				"extensions",
@@ -123,5 +129,6 @@ export async function getScannedBuiltinExtensions(
 			}
 		}
 	}
+
 	return localExtensions.concat(prebuiltExtensions);
 }

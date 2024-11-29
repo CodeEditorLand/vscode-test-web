@@ -23,6 +23,7 @@ export type VSCodeQuality = "insiders" | "stable";
 
 export type GalleryExtension = {
 	readonly id: string;
+
 	readonly preRelease?: boolean;
 };
 
@@ -213,6 +214,7 @@ export async function runTests(
 			type Severity = "error" | "warning" | "info";
 
 			const unreportedOutput: { type: Severity; args: unknown[] }[] = [];
+
 			await page.exposeFunction(
 				"codeAutomationLog",
 				(type: Severity, args: unknown[]) => {
@@ -228,14 +230,17 @@ export async function runTests(
 					} catch (error) {
 						console.error(`Error when closing browser: ${error}`);
 					}
+
 					if (unreportedOutput.length) {
 						console.error(
 							`There were ${unreportedOutput.length} messages that could not be reported to the console:`,
 						);
+
 						unreportedOutput.forEach(({ type, args }) =>
 							console[type](...args),
 						);
 					}
+
 					server.close();
 
 					if (code === 0) {
@@ -246,6 +251,7 @@ export async function runTests(
 				},
 			);
 		};
+
 		console.log(`Opening browser on ${endpoint}...`);
 
 		const context = await openBrowser(endpoint, options, configPage);
@@ -254,6 +260,7 @@ export async function runTests(
 			context.once("close", () => server.close());
 		} else {
 			server.close();
+
 			e(new Error("Can not run test as opening of browser failed."));
 		}
 	});
@@ -266,6 +273,7 @@ async function getBuild(options: Options): Promise<Static | Sources> {
 			location: options.vsCodeDevPath,
 		};
 	}
+
 	const quality = options.quality || options.version;
 
 	const commit = options.commit;
@@ -305,11 +313,13 @@ export async function open(options: Options): Promise<Disposable> {
 	const endpoint = `http://${host}:${port}`;
 
 	const context = await openBrowser(endpoint, options);
+
 	context?.once("close", () => server.close());
 
 	return {
 		dispose: () => {
 			server.close();
+
 			context?.browser()?.close();
 		},
 	};
@@ -366,8 +376,10 @@ async function openBrowser(
 
 	// forcefully close browser if last page is closed. workaround for https://github.com/microsoft/playwright/issues/2946
 	let openPages = 0;
+
 	context.on("page", (page) => {
 		openPages++;
+
 		page.once("close", () => {
 			openPages--;
 
@@ -382,9 +394,11 @@ async function openBrowser(
 	if (configPage) {
 		await configPage(page, browser);
 	}
+
 	if (options.waitForDebugger) {
 		await page.waitForFunction(() => "__jsDebugIsReady" in globalThis);
 	}
+
 	if (options.verbose) {
 		page.on("console", (message) => {
 			console.log(message.text());
@@ -405,8 +419,11 @@ function validateStringOrUndefined(
 	if (value === undefined || typeof value === "string") {
 		return value;
 	}
+
 	console.log(`'${name}' needs to be a string value.`);
+
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -429,8 +446,11 @@ function validateBooleanOrUndefined(
 	if (value === undefined || typeof value === "boolean") {
 		return value;
 	}
+
 	console.log(`'${name}' needs to be a boolean value.`);
+
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -443,11 +463,13 @@ function validatePrintServerLog(options: CommandLineOptions): boolean {
 	if (printServerLog !== undefined) {
 		return printServerLog;
 	}
+
 	const hideServerLog = validateBooleanOrUndefined(options, "hideServerLog");
 
 	if (hideServerLog !== undefined) {
 		return !hideServerLog;
 	}
+
 	return false;
 }
 
@@ -457,6 +479,7 @@ function validateBrowserType(options: CommandLineOptions): BrowserType {
 	if (browserType === undefined) {
 		return "chromium";
 	}
+
 	if (options.browserType && options.browser) {
 		console.log(
 			`Ignoring browserType option '${options.browserType}' as browser option '${options.browser}' is set.`,
@@ -469,8 +492,11 @@ function validateBrowserType(options: CommandLineOptions): BrowserType {
 	) {
 		return browserType as BrowserType;
 	}
+
 	console.log(`Invalid browser option ${browserType}.`);
+
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -478,18 +504,23 @@ function validatePermissions(permissions: unknown): string[] | undefined {
 	if (permissions === undefined) {
 		return undefined;
 	}
+
 	function isValidPermission(p: unknown): p is string {
 		return typeof p === "string";
 	}
+
 	if (isValidPermission(permissions)) {
 		return [permissions];
 	}
+
 	if (Array.isArray(permissions) && permissions.every(isValidPermission)) {
 		return permissions;
 	}
 
 	console.log(`Invalid permission: ${permissions}`);
+
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -497,18 +528,23 @@ function validateBrowserOptions(browserOptions: unknown): string[] | undefined {
 	if (browserOptions === undefined) {
 		return undefined;
 	}
+
 	function isValidOption(p: unknown): p is string {
 		return typeof p === "string";
 	}
+
 	if (isValidOption(browserOptions)) {
 		return [browserOptions];
 	}
+
 	if (Array.isArray(browserOptions) && browserOptions.every(isValidOption)) {
 		return browserOptions;
 	}
 
 	console.log(`Invalid browser option: ${browserOptions}`);
+
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -518,9 +554,11 @@ async function validateExtensionPaths(
 	if (extensionPaths === undefined) {
 		return undefined;
 	}
+
 	if (!Array.isArray(extensionPaths)) {
 		extensionPaths = [extensionPaths];
 	}
+
 	if (Array.isArray(extensionPaths)) {
 		const res: string[] = [];
 
@@ -531,11 +569,14 @@ async function validateExtensionPaths(
 				break;
 			}
 		}
+
 		return res;
 	}
 
 	console.log(`Invalid extensionPath`);
+
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -548,9 +589,11 @@ async function validateExtensionIds(
 	if (extensionIds === undefined) {
 		return undefined;
 	}
+
 	if (!Array.isArray(extensionIds)) {
 		extensionIds = [extensionIds];
 	}
+
 	if (Array.isArray(extensionIds)) {
 		const res: GalleryExtension[] = [];
 
@@ -573,12 +616,14 @@ async function validateExtensionIds(
 				break;
 			}
 		}
+
 		return res;
 	} else {
 		console.log(`Invalid extensionId`);
 	}
 
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -588,14 +633,17 @@ async function validatePath(loc: string, isFile?: boolean): Promise<string> {
 	if (isFile) {
 		if (!(await fileExists(loc))) {
 			console.log(`'${loc}' must be an existing file.`);
+
 			process.exit(-1);
 		}
 	} else {
 		if (!(await directoryExists(loc))) {
 			console.log(`'${loc}' must be an existing folder.`);
+
 			process.exit(-1);
 		}
 	}
+
 	return loc;
 }
 
@@ -606,6 +654,7 @@ function validateQuality(
 ): VSCodeQuality | undefined {
 	if (version) {
 		console.log(`--version has been replaced by --quality`);
+
 		quality = quality || version;
 	}
 
@@ -614,6 +663,7 @@ function validateQuality(
 
 		return undefined;
 	}
+
 	if (
 		quality === undefined ||
 		(typeof quality === "string" &&
@@ -621,6 +671,7 @@ function validateQuality(
 	) {
 		return quality as VSCodeQuality;
 	}
+
 	if (version === "sources") {
 		console.log(
 			`Instead of version=sources use 'sourcesPath' with the location of the VS Code repository.`,
@@ -628,7 +679,9 @@ function validateQuality(
 	} else {
 		console.log(`Invalid quality.`);
 	}
+
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -641,6 +694,7 @@ function validateCommit(
 
 		return undefined;
 	}
+
 	if (
 		commit === undefined ||
 		(typeof commit === "string" && commit.match(/^[0-9a-f]{40}$/))
@@ -651,7 +705,9 @@ function validateCommit(
 			`Invalid format for commit. Expected a 40 character long SHA1 hash.`,
 		);
 	}
+
 	showHelp();
+
 	process.exit(-1);
 }
 
@@ -663,92 +719,135 @@ function validatePortNumber(port: unknown): number | undefined {
 			return number;
 		}
 	}
+
 	return undefined;
 }
 
 interface CommandLineOptions {
 	browser?: string;
+
 	browserOptions?: string;
+
 	browserType?: string;
+
 	extensionDevelopmentPath?: string;
+
 	extensionTestsPath?: string;
+
 	quality?: string;
+
 	commit?: string;
+
 	sourcesPath?: string;
 	"open-devtools"?: boolean;
+
 	headless?: boolean;
+
 	hideServerLog?: boolean;
+
 	printServerLog?: boolean;
+
 	permission?: string | string[];
 	"folder-uri"?: string;
+
 	extensionPath?: string | string[];
+
 	extensionId?: string | string[];
+
 	host?: string;
+
 	port?: string;
+
 	verbose?: boolean;
+
 	coi?: boolean;
+
 	esm?: boolean;
+
 	help?: boolean;
+
 	testRunnerDataDir?: string;
 }
 
 function showHelp() {
 	console.log("Usage:");
+
 	console.log(
 		`  --browser 'chromium' | 'firefox' | 'webkit' | 'none': The browser to launch. [Optional, defaults to 'chromium']`,
 	);
+
 	console.log(
 		`  --browserOption option: Command line argument to use when launching the browser instance. [Optional, Multiple]`,
 	);
+
 	console.log(
 		`  --extensionDevelopmentPath path: A path pointing to an extension under development to include. [Optional]`,
 	);
+
 	console.log(
 		`  --extensionTestsPath path: A path to a test module to run. [Optional]`,
 	);
+
 	console.log(
 		`  --quality 'insiders' | 'stable' [Optional, default 'insiders', ignored when running from sources]`,
 	);
+
 	console.log(
 		`  --commit commitHash [Optional, defaults to latest build version of the given quality, ignored when running from sources]`,
 	);
+
 	console.log(
 		`  --sourcesPath path: If provided, running from VS Code sources at the given location. [Optional]`,
 	);
+
 	console.log(`  --open-devtools: If set, opens the dev tools. [Optional]`);
+
 	console.log(
 		`  --headless: Whether to hide the browser. Defaults to true when an extensionTestsPath is provided, otherwise false. [Optional]`,
 	);
+
 	console.log(
 		`  --permission: Permission granted in the opened browser: e.g. 'clipboard-read', 'clipboard-write'. [Optional, Multiple]`,
 	);
+
 	console.log(`  --coi: Enables cross origin isolation [Optional]`);
+
 	console.log(`  --esm: Serve the ESM variant of VS Code [Optional]`);
+
 	console.log(
 		`  --folder-uri: workspace to open VS Code on. Ignored when folderPath is provided. [Optional]`,
 	);
+
 	console.log(
 		`  --extensionPath: A path pointing to a folder containing additional extensions to include [Optional, Multiple]`,
 	);
+
 	console.log(
 		`  --extensionId: The id of an extension include. The format is '\${publisher}.\${name}'. Append '@prerelease' to use a prerelease version [Optional, Multiple]`,
 	);
+
 	console.log(
 		`  --host: The host name the server is opened on. [Optional, defaults to localhost]`,
 	);
+
 	console.log(
 		`  --port: The port the server is opened on. [Optional, defaults to 3000]`,
 	);
+
 	console.log(`  --open-devtools: If set, opens the dev tools. [Optional]`);
+
 	console.log(
 		`  --verbose: If set, prints out more information when running the server. [Optional]`,
 	);
+
 	console.log(
 		`  --printServerLog: If set, prints the server access log. [Optional]`,
 	);
+
 	console.log(
 		`  --testRunnerDataDir: If set, the temporary folder for storing the VS Code builds used for running the tests. [Optional, defaults to '$CURRENT_WORKING_DIR/.vscode-test-web']`,
 	);
+
 	console.log(
 		`  folderPath. A local folder to open VS Code on. The folder content will be available as a virtual file system. [Optional]`,
 	);
@@ -758,6 +857,7 @@ async function cliMain(): Promise<void> {
 	process.on("unhandledRejection", (e: any) => {
 		console.error("unhandledRejection", e);
 	});
+
 	process.on("uncaughtException", (e: any) => {
 		console.error("uncaughtException", e);
 	});
@@ -765,6 +865,7 @@ async function cliMain(): Promise<void> {
 	/* eslint-disable @typescript-eslint/no-var-requires */
 	/* eslint-disable @typescript-eslint/no-require-imports */
 	const manifest = JSON.parse(await readFileInRepo("package.json"));
+
 	console.log(`${manifest.name}: ${manifest.version}`);
 
 	const options: minimist.Opts = {
@@ -800,9 +901,12 @@ async function cliMain(): Promise<void> {
 		unknown: (arg) => {
 			if (arg.startsWith("-")) {
 				console.log(`Unknown argument ${arg}`);
+
 				showHelp();
+
 				process.exit();
 			}
+
 			return true;
 		},
 	};
@@ -811,6 +915,7 @@ async function cliMain(): Promise<void> {
 
 	if (args.help) {
 		showHelp();
+
 		process.exit();
 	}
 
@@ -880,6 +985,7 @@ async function cliMain(): Promise<void> {
 				console.log(
 					`Local folder provided as input, ignoring 'folder-uri'`,
 				);
+
 				folderUri = undefined;
 			}
 		}
@@ -911,6 +1017,7 @@ async function cliMain(): Promise<void> {
 			testRunnerDataDir,
 		}).catch((e) => {
 			console.log("Error running tests:", e);
+
 			process.exit(1);
 		});
 	} else {

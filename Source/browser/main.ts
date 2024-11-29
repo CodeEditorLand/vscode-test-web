@@ -18,7 +18,9 @@ import {
 
 class WorkspaceProvider implements IWorkspaceProvider {
 	private static QUERY_PARAM_EMPTY_WINDOW = "ew";
+
 	private static QUERY_PARAM_FOLDER = "folder";
+
 	private static QUERY_PARAM_WORKSPACE = "workspace";
 
 	private static QUERY_PARAM_PAYLOAD = "payload";
@@ -26,6 +28,7 @@ class WorkspaceProvider implements IWorkspaceProvider {
 	static create(
 		config: IWorkbenchConstructionOptions & {
 			folderUri?: UriComponents;
+
 			workspaceUri?: UriComponents;
 		},
 	) {
@@ -36,11 +39,13 @@ class WorkspaceProvider implements IWorkspaceProvider {
 		let payload = Object.create(null);
 
 		const query = new URL(document.location.href).searchParams;
+
 		query.forEach((value, key) => {
 			switch (key) {
 				// Folder
 				case WorkspaceProvider.QUERY_PARAM_FOLDER:
 					workspace = { folderUri: URI.parse(value) };
+
 					foundWorkspace = true;
 
 					break;
@@ -48,6 +53,7 @@ class WorkspaceProvider implements IWorkspaceProvider {
 				// Workspace
 				case WorkspaceProvider.QUERY_PARAM_WORKSPACE:
 					workspace = { workspaceUri: URI.parse(value) };
+
 					foundWorkspace = true;
 
 					break;
@@ -55,6 +61,7 @@ class WorkspaceProvider implements IWorkspaceProvider {
 				// Empty
 				case WorkspaceProvider.QUERY_PARAM_EMPTY_WINDOW:
 					workspace = undefined;
+
 					foundWorkspace = true;
 
 					break;
@@ -66,6 +73,7 @@ class WorkspaceProvider implements IWorkspaceProvider {
 					} catch (error) {
 						console.error(error); // possible invalid JSON
 					}
+
 					break;
 			}
 		});
@@ -113,6 +121,7 @@ class WorkspaceProvider implements IWorkspaceProvider {
 				return !!window.open(targetHref);
 			}
 		}
+
 		return false;
 	}
 
@@ -132,6 +141,7 @@ class WorkspaceProvider implements IWorkspaceProvider {
 			const queryParamFolder = encodeURIComponent(
 				workspace.folderUri.toString(true),
 			);
+
 			targetHref = `${document.location.origin}${document.location.pathname}?${WorkspaceProvider.QUERY_PARAM_FOLDER}=${queryParamFolder}`;
 		}
 
@@ -140,6 +150,7 @@ class WorkspaceProvider implements IWorkspaceProvider {
 			const queryParamWorkspace = encodeURIComponent(
 				workspace.workspaceUri.toString(true),
 			);
+
 			targetHref = `${document.location.origin}${document.location.pathname}?${WorkspaceProvider.QUERY_PARAM_WORKSPACE}=${queryParamWorkspace}`;
 		}
 
@@ -193,11 +204,15 @@ class LocalStorageURLCallbackProvider
 	)[] = ["scheme", "authority", "path", "query", "fragment"];
 
 	private readonly _onCallback = new Emitter<URI>();
+
 	readonly onCallback = this._onCallback.event;
 
 	private pendingCallbacks = new Set<number>();
+
 	private lastTimeChecked = Date.now();
+
 	private checkCallbacksTimeout: unknown | undefined = undefined;
+
 	private onDidChangeLocalStorageDisposable: IDisposable | undefined;
 
 	constructor(private readonly _callbackRoute: string) {}
@@ -225,9 +240,11 @@ class LocalStorageURLCallbackProvider
 			)
 		) {
 			const key = `vscode-web.url-callbacks[${id}]`;
+
 			localStorage.removeItem(key);
 
 			this.pendingCallbacks.add(id);
+
 			this.startListening();
 		}
 
@@ -243,7 +260,9 @@ class LocalStorageURLCallbackProvider
 		}
 
 		const fn = () => this.onDidChangeLocalStorage();
+
 		window.addEventListener("storage", fn);
+
 		this.onDidChangeLocalStorageDisposable = {
 			dispose: () => window.removeEventListener("storage", fn),
 		};
@@ -251,6 +270,7 @@ class LocalStorageURLCallbackProvider
 
 	private stopListening(): void {
 		this.onDidChangeLocalStorageDisposable?.dispose();
+
 		this.onDidChangeLocalStorageDisposable = undefined;
 	}
 
@@ -264,6 +284,7 @@ class LocalStorageURLCallbackProvider
 		} else if (this.checkCallbacksTimeout === undefined) {
 			this.checkCallbacksTimeout = setTimeout(() => {
 				this.checkCallbacksTimeout = undefined;
+
 				this.checkCallbacks();
 			}, 1000 - ellapsed);
 		}
@@ -286,7 +307,9 @@ class LocalStorageURLCallbackProvider
 
 				pendingCallbacks =
 					pendingCallbacks ?? new Set(this.pendingCallbacks);
+
 				pendingCallbacks.delete(id);
+
 				localStorage.removeItem(key);
 			}
 		}
@@ -319,9 +342,12 @@ class LocalStorageURLCallbackProvider
 	if (!configElement || !configElementAttribute) {
 		throw new Error("Missing web configuration element");
 	}
+
 	const config: IWorkbenchConstructionOptions & {
 		folderUri?: UriComponents;
+
 		workspaceUri?: UriComponents;
+
 		callbackRoute: string;
 	} = JSON.parse(configElementAttribute);
 
