@@ -862,10 +862,7 @@ async function cliMain(): Promise<void> {
 		console.error("uncaughtException", e);
 	});
 
-	/* eslint-disable @typescript-eslint/no-var-requires */
-	/* eslint-disable @typescript-eslint/no-require-imports */
-	const manifest = JSON.parse(await readFileInRepo("package.json"));
-
+	const manifest = JSON.parse(await readFileInRepo('package.json'));
 	console.log(`${manifest.name}: ${manifest.version}`);
 
 	const options: minimist.Opts = {
