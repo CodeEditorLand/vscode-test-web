@@ -28,7 +28,7 @@
 		"koa-mount": "4.0.0",
 		"koa-static": "5.0.0",
 		"minimist": "1.2.8",
-		"tar-fs": "3.0.7"
+		"tar-fs": "3.0.8"
 	},
 	"devDependencies": {
 		"@tony.ganchev/eslint-plugin-header": "3.1.2",
